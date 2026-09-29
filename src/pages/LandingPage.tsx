@@ -1,3 +1,5 @@
+import {useState} from 'react'
+import {billingPlans, createCheckoutSession, isBillingConfigured} from '../billing'
 import {ContactFooter} from '../components/ContactFooter'
 
 const features = [
@@ -7,6 +9,19 @@ const features = [
 ]
 
 export function LandingPage() {
+  const [checkoutState, setCheckoutState] = useState<'idle' | 'loading' | 'error'>('idle')
+  const proPlan = billingPlans[0]
+
+  async function startCheckout() {
+    if (!isBillingConfigured) return
+    setCheckoutState('loading')
+    try {
+      window.location.assign(await createCheckoutSession(proPlan.id))
+    } catch {
+      setCheckoutState('error')
+    }
+  }
+
   return <div className="landing">
     <header className="landing-header">
       <a className="landing-brand" href="/" aria-label="OBS Stream Tools — início">
@@ -61,9 +76,16 @@ export function LandingPage() {
         <div className="feature-grid">{features.map(feature => <article key={feature.number}><span>{feature.number}</span><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</div>
       </section>
 
-      <section className="landing-plan" id="planos">
-        <div><p className="eyebrow">COMECE AGORA</p><h2>O controle que faltava<br />na sua transmissão.</h2><p>O OBS Deck está disponível para você experimentar. Planos para recursos avançados chegarão em breve.</p></div>
-        <a className="primary-action" href="/obsdeck">Abrir OBS Deck <span>→</span></a>
+      <section className="landing-pricing" id="planos">
+        <div className="pricing-heading"><p className="eyebrow">PLANOS</p><h2>Comece agora.<br />Evolua quando precisar.</h2><p>Use o controle essencial gratuitamente e acompanhe a chegada das ferramentas avançadas.</p></div>
+        <div className="pricing-grid">
+          <article><span className="plan-label">ESSENCIAL</span><h3>Grátis</h3><strong>R$ 0 <small>/ para sempre</small></strong><p>O necessário para controlar seu OBS de qualquer tela na rede local.</p><ul><li>OBS Deck completo</li><li>Cenas, fontes e saídas</li><li>Prévia em tempo real</li></ul><a className="plan-action" href="/obsdeck">Começar agora</a></article>
+          <article className="pro-plan"><span className="plan-label">PARA CRIADORES</span><h3>{proPlan.name}</h3><strong>{proPlan.priceLabel}</strong><p>{proPlan.description}</p><ul>{proPlan.features.map(feature => <li key={feature}>{feature}</li>)}</ul>{isBillingConfigured
+            ? <button className="plan-action" disabled={checkoutState === 'loading'} onClick={startCheckout}>{checkoutState === 'loading' ? 'Abrindo checkout…' : 'Assinar plano Pro'}</button>
+            : <a className="plan-action" href="mailto:verolabso@gmail.com?subject=Interesse%20no%20OBS%20Stream%20Tools%20Pro">Tenho interesse</a>}
+            {checkoutState === 'error' && <small className="checkout-error" role="alert">Não foi possível abrir o checkout. Tente novamente.</small>}
+          </article>
+        </div>
       </section>
     </main>
 

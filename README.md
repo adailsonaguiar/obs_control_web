@@ -1,6 +1,6 @@
-# OBS Remote Deck
+# OBS Stream Tools
 
-Interface web responsiva para controlar remotamente o OBS Studio por meio do **OBS Control Server**. O navegador não se conecta diretamente ao OBS: todas as operações passam pela API autenticada do servidor local.
+Portal de ferramentas para streaming. A landing page está disponível em `/` e o **OBS Deck**, interface web responsiva para controlar remotamente o OBS Studio, em `/obsdeck`.
 
 ## Recursos
 
@@ -69,6 +69,20 @@ npm run preview
 ```
 
 O preview utiliza a porta `4173`. Para produção real, publique o conteúdo de `dist` em qualquer servidor de arquivos estáticos acessível na rede.
+
+O servidor de hospedagem deve redirecionar rotas desconhecidas para `index.html`, permitindo acesso direto a `/obsdeck`.
+
+## Integração de pagamentos
+
+O frontend está preparado para solicitar sessões de checkout a um backend. Copie `.env.example` para `.env.local` e configure `VITE_BILLING_API_URL` com a URL pública desse serviço.
+
+O endpoint `POST /checkout-sessions` deve receber `planId`, `successUrl` e `cancelUrl`, criar a sessão no provedor escolhido e responder:
+
+```json
+{"checkoutUrl": "https://checkout.do-provedor.example/sessao"}
+```
+
+Chaves privadas, preços confiáveis e webhooks devem permanecer exclusivamente no backend. Sem a variável configurada, a landing exibe um link de interesse por e-mail no lugar do checkout.
 
 ## Testes
 

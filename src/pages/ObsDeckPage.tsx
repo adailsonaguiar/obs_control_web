@@ -5,7 +5,7 @@ import {Dashboard} from '../components/Dashboard'
 import {DashboardData, Notice} from '../components/types'
 
 const storageKey = 'obs-control-web.connection'
-const emptyData: DashboardData = {status: {connected: false, currentScene: '', recording: false, streaming: false}, scenes: [], sources: []}
+const emptyData: DashboardData = {status: {connected: false, currentScene: '', recording: false, streaming: false}, scenes: [], sources: [], telemetry: null, audio: [], studio: null, diagnostics: null}
 
 function savedConnection(): {settings: ConnectionSettings; remember: boolean} {
   try {
@@ -35,8 +35,11 @@ export function ObsDeckPage() {
   const controls = useMemo(() => api ? {
     setScene: (sceneName: string) => api.setScene(sceneName),
     setSourceVisible: (sceneName: string, sourceName: string, visible: boolean) => api.setSourceVisible(sceneName, sourceName, visible),
-    setRecording: (active: boolean) => api.setRecording(active),
-    setStreaming: (active: boolean) => api.setStreaming(active),
+    setRecording: (active: boolean, commandId: string) => api.setRecording(active, commandId),
+    setStreaming: (active: boolean, commandId: string) => api.setStreaming(active, commandId),
+    setAudio: (name: string, changes: {muted?: boolean; volumeDb?: number}, commandId: string) => api.updateAudio(name, changes, commandId),
+    setPreviewScene: (sceneName: string, commandId: string) => api.setPreviewScene(sceneName, commandId),
+    transition: (duration: number, commandId: string) => api.transition(duration, commandId),
     fetchPreview: (sceneName: string, width?: number, quality?: number) => api.preview(sceneName, width, quality),
   } : null, [api])
 
@@ -45,10 +48,14 @@ export function ObsDeckPage() {
     const sequence = ++refreshSequence.current
     try {
       const status = await client.status()
-      const [scenes, sources] = status.connected
-        ? await Promise.all([client.scenes(), client.sources(status.currentScene)])
-        : [[], []]
-      if (sequence === refreshSequence.current) setData({status, scenes, sources})
+      const [scenes, sources, telemetry, audio, studio, diagnostics] = status.connected
+        ? await Promise.all([
+          client.scenes(), client.sources(status.currentScene),
+          client.telemetry().catch(() => null), client.audioInputs().catch(() => []),
+          client.studioMode().catch(() => null), client.diagnostics().catch(() => null),
+        ])
+        : [[], [], null, [], null, null]
+      if (sequence === refreshSequence.current) setData({status, scenes, sources, telemetry, audio, studio, diagnostics})
     } catch (error) {
       if (sequence !== refreshSequence.current) return
       setNotice({kind: 'error', text: error instanceof Error ? error.message : String(error)})
@@ -105,6 +112,11 @@ export function ObsDeckPage() {
     finally { setBusy('') }
   }, [refresh])
   const dismissNotice = useCallback(() => setNotice(null), [])
+  const refreshDiagnostics = useCallback(async () => {
+    if (!api) return
+    const diagnostics = await api.diagnostics()
+    setData(previous => ({...previous, diagnostics}))
+  }, [api])
 
   if (!settings || !api || !controls) return <ConnectionScreen draft={draft} setDraft={setDraft} remember={remember} setRemember={setRemember} connecting={connecting} notice={notice} onSubmit={connect} />
 
@@ -113,6 +125,7 @@ export function ObsDeckPage() {
     dismissNotice={dismissNotice} disconnect={disconnect} runAction={runAction}
     setScene={controls.setScene} setSourceVisible={controls.setSourceVisible}
     setRecording={controls.setRecording} setStreaming={controls.setStreaming}
+    setAudio={controls.setAudio} setPreviewScene={controls.setPreviewScene} transition={controls.transition} refreshDiagnostics={refreshDiagnostics}
     fetchPreview={controls.fetchPreview}
   />
 }

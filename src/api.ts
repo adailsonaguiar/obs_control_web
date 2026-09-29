@@ -14,6 +14,13 @@ export type OBSStatus = {
 export type Scene = {name: string}
 export type Source = {sceneName: string; name: string; id: number; enabled: boolean}
 export type ServerEvent = {id: number; time: string; type: string; data?: unknown}
+export type CommandResult = {ok: boolean; commandId?: string; status?: 'confirmed' | 'failed'; confirmedAt?: string}
+export type Telemetry = {streaming: boolean; streamDurationMs: number; streamBytes: number; streamCongestion: number; recording: boolean; recordDurationMs: number; recordBytes: number; cpuUsage: number; activeFps: number; averageFrameRenderTime: number; renderSkippedFrames: number; renderTotalFrames: number; outputSkippedFrames: number; outputTotalFrames: number}
+export type AudioInput = {name: string; kind: string; muted: boolean; volumeDb: number; volumeMul: number; levelDb: number; levelStatus: string}
+export type StudioMode = {enabled: boolean; programScene: string; previewScene: string; transitionName: string; transitionDuration: number}
+export type DiagnosticLink = {id: string; label: string; state: 'healthy' | 'attention' | 'critical' | 'no-data'; lastSeen: string; message: string}
+export type Diagnostics = {generatedAt: string; links: DiagnosticLink[]}
+export type AuditEvent = {id: number; time: string; actor: string; action: string; commandId?: string; result: string}
 
 export class APIError extends Error {
   constructor(message: string, public readonly status: number) {
@@ -54,8 +61,16 @@ export class OBSControlAPI {
   setSourceVisible(sceneName: string, sourceName: string, visible: boolean) {
     return this.post(`/obs/source/${visible ? 'show' : 'hide'}`, {sceneName, sourceName})
   }
-  setRecording(active: boolean) { return this.post(`/obs/recording/${active ? 'start' : 'stop'}`) }
-  setStreaming(active: boolean) { return this.post(`/obs/stream/${active ? 'start' : 'stop'}`) }
+  setRecording(active: boolean, commandId: string) { return this.post<CommandResult>(`/obs/recording/${active ? 'start' : 'stop'}`, undefined, commandId) }
+  setStreaming(active: boolean, commandId: string) { return this.post<CommandResult>(`/obs/stream/${active ? 'start' : 'stop'}`, undefined, commandId) }
+  telemetry() { return this.request<Telemetry>('/api/v1/telemetry') }
+  async audioInputs() { return (await this.request<{inputs: AudioInput[]}>('/api/v1/audio/inputs')).inputs }
+  updateAudio(name: string, changes: {muted?: boolean; volumeDb?: number}, commandId: string) { return this.request<CommandResult>(`/api/v1/audio/inputs/${encodeURIComponent(name)}`, {method: 'PATCH', body: JSON.stringify(changes), headers: {'Idempotency-Key': commandId}}) }
+  studioMode() { return this.request<StudioMode>('/api/v1/studio-mode') }
+  setPreviewScene(sceneName: string, commandId: string) { return this.post<CommandResult>('/api/v1/studio-mode/preview', {sceneName}, commandId) }
+  transition(duration: number, commandId: string) { return this.post<CommandResult>('/api/v1/transitions', {duration}, commandId) }
+  diagnostics() { return this.request<Diagnostics>('/api/v1/diagnostics') }
+  async auditEvents() { return (await this.request<{events: AuditEvent[]}>('/api/v1/audit-events')).events }
 
   connectEvents(onEvent: (event: ServerEvent) => void, onState: (connected: boolean) => void) {
     const socket = new WebSocket(this.eventsURL)
@@ -68,8 +83,8 @@ export class OBSControlAPI {
     return () => socket.close()
   }
 
-  private post<T = {ok: boolean}>(path: string, body?: unknown) {
-    return this.request<T>(path, {method: 'POST', body: body ? JSON.stringify(body) : undefined})
+  private post<T = {ok: boolean}>(path: string, body?: unknown, commandId?: string) {
+    return this.request<T>(path, {method: 'POST', body: body ? JSON.stringify(body) : undefined, headers: commandId ? {'Idempotency-Key': commandId} : undefined})
   }
 
   private async requestBlob(path: string): Promise<Blob> {

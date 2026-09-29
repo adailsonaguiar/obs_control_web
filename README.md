@@ -24,6 +24,8 @@ Portal de ferramentas para streaming. A landing page está disponível em `/` e 
 
 ## Preparar o servidor
 
+Baixe o instalador mais recente na página de [releases do OBS Control Server](https://github.com/adailsonaguiar/obs_control_server/releases) e instale-o no mesmo computador em que o OBS Studio será executado.
+
 No aplicativo desktop **OBS Control Server**:
 
 1. Abra **Configurações**.

@@ -30,6 +30,7 @@ export function LandingPage() {
       </a>
       <nav aria-label="Navegação principal">
         <a href="#ferramentas">Ferramentas</a>
+        <a href="#instalacao">Instalação</a>
         <a href="#recursos">Recursos</a>
         <a href="#planos">Planos</a>
       </nav>
@@ -68,6 +69,17 @@ export function LandingPage() {
           <article><span>02</span><div><small>EM DESENVOLVIMENTO</small><strong>Automação</strong><p>Rotinas e ações para seu fluxo.</p></div></article>
           <article><span>03</span><div><small>EM BREVE</small><strong>Monitoramento</strong><p>Métricas essenciais em um só lugar.</p></div></article>
         </div>
+      </section>
+
+      <section className="landing-setup" id="instalacao">
+        <div className="setup-heading"><p className="eyebrow">PRIMEIROS PASSOS</p><h2>Do download ao controle<br />em poucos minutos.</h2><a className="primary-action" href="https://github.com/adailsonaguiar/obs_control_server/releases" target="_blank" rel="noreferrer">Baixar servidor <span>↗</span></a></div>
+        <ol className="setup-steps">
+          <li><span>01</span><div><h3>Baixe e instale</h3><p>Na página de releases, escolha o instalador mais recente para o sistema do computador onde o OBS está instalado.</p></div></li>
+          <li><span>02</span><div><h3>Conecte ao OBS</h3><p>Abra o OBS Remote Deck Server e informe a porta e a senha configuradas em “Ferramentas → Configurações do servidor WebSocket” no OBS.</p></div></li>
+          <li><span>03</span><div><h3>Libere a rede local</h3><p>Ative “Permitir acesso pela rede local”, salve e reinicie o servidor. Copie o IP, a porta e o token exibidos.</p></div></li>
+          <li><span>04</span><div><h3>Abra o OBS Deck</h3><p>Acesse o controle pelo celular ou tablet conectado à mesma rede e informe os dados copiados do servidor.</p></div></li>
+        </ol>
+        <p className="setup-note"><strong>Importante:</strong> mantenha o OBS e o aplicativo servidor abertos durante o uso. O firewall do computador deve permitir conexões na porta configurada.</p>
       </section>
 
       <section className="landing-features" id="recursos">

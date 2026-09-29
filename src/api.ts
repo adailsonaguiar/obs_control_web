@@ -69,6 +69,8 @@ export class OBSControlAPI {
   studioMode() { return this.request<StudioMode>('/api/v1/studio-mode') }
   setPreviewScene(sceneName: string, commandId: string) { return this.post<CommandResult>('/api/v1/studio-mode/preview', {sceneName}, commandId) }
   transition(duration: number, commandId: string) { return this.post<CommandResult>('/api/v1/transitions', {duration}, commandId) }
+  movePTZ(host: string, port: number, direction: string, speed: number) { return this.post('/ptz/move', {host, port, direction, speed}) }
+  zoomPTZ(host: string, port: number, direction: string, speed: number) { return this.post('/ptz/zoom', {host, port, direction, speed}) }
   diagnostics() { return this.request<Diagnostics>('/api/v1/diagnostics') }
   async auditEvents() { return (await this.request<{events: AuditEvent[]}>('/api/v1/audit-events')).events }
 

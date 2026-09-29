@@ -1,6 +1,6 @@
 # OBS Stream Tools
 
-Portal de ferramentas para streaming. A landing page está disponível em `/` e o **OBS Deck**, interface web responsiva para controlar remotamente o OBS Studio, em `/deck`.
+Portal de ferramentas para streaming. A landing page está disponível em `/`, o **OBS Deck** em `/deck` e o controle de câmeras **VISCA over IP** em `/ptz`.
 
 ## Planejamento do produto
 
@@ -19,6 +19,7 @@ O documento [Plano de novas funcionalidades](docs/PLANO_NOVAS_FUNCIONALIDADES.md
 - Reconexão automática do canal de eventos.
 - Layout responsivo para computador, tablet e celular.
 - Token mantido apenas durante a sessão por padrão.
+- Controle momentâneo de direção e zoom para câmeras PTZ compatíveis com VISCA over IP.
 
 ## Pré-requisitos
 

@@ -42,4 +42,14 @@ describe('OBSControlAPI', () => {
     expect(new Headers(options?.headers).get('Authorization')).toBe('Bearer secret')
     expect(result.type).toBe('image/jpeg')
   })
+
+  it('envia comandos PTZ autenticados', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ok: true}), {status: 200}))
+    const api = new OBSControlAPI({host: '10.0.0.8', port: 3456, token: 'secret'})
+    await api.movePTZ('192.168.1.100', 52381, 'left', 8)
+    const [url, options] = fetchMock.mock.calls[0]
+    expect(url).toBe('http://10.0.0.8:3456/ptz/move')
+    expect(JSON.parse(String(options?.body))).toEqual({host: '192.168.1.100', port: 52381, direction: 'left', speed: 8})
+    expect(new Headers(options?.headers).get('Authorization')).toBe('Bearer secret')
+  })
 })

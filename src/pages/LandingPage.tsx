@@ -66,9 +66,15 @@ export function LandingPage() {
           <div className="tool-copy"><p>DISPONÍVEL AGORA</p><h3>OBS Deck</h3><span>Controle remoto para cenas, fontes, gravação e transmissão — direto do navegador.</span></div>
           <a href="/deck" aria-label="Abrir OBS Deck">→</a>
         </article>
+        <article className="tool-card featured ptz-tool">
+          <div className="tool-number">02</div>
+          <div className="tool-icon ptz-tool-icon"><span>↕</span><span>＋</span><span>↔</span></div>
+          <div className="tool-copy"><p>DISPONÍVEL AGORA</p><h3>Controle PTZ</h3><span>Mova e controle o zoom de câmeras compatíveis com VISCA over IP.</span></div>
+          <a href="/ptz" aria-label="Abrir Controle PTZ">→</a>
+        </article>
         <div className="coming-tools">
-          <article><span>02</span><div><small>EM DESENVOLVIMENTO</small><strong>Automação</strong><p>Rotinas e ações para seu fluxo.</p></div></article>
-          <article><span>03</span><div><small>EM BREVE</small><strong>Monitoramento</strong><p>Métricas essenciais em um só lugar.</p></div></article>
+          <article><span>03</span><div><small>EM DESENVOLVIMENTO</small><strong>Automação</strong><p>Rotinas e ações para seu fluxo.</p></div></article>
+          <article><span>04</span><div><small>EM BREVE</small><strong>Monitoramento</strong><p>Métricas essenciais em um só lugar.</p></div></article>
         </div>
       </section>
 

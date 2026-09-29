@@ -1,11 +1,12 @@
 import {memo, useEffect, useRef, useState} from 'react'
+import {ContactFooter} from './ContactFooter'
 import {DashboardProps} from './types'
 
-function DashboardComponent({address, data, events, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming, fetchPreview}: DashboardProps) {
+function DashboardComponent({address, data, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming, fetchPreview}: DashboardProps) {
   const {status, scenes, sources} = data
   return <div className="app-shell">
     <header className="topbar">
-      <div className="identity"><span className="logo">OC</span><div><strong>OBS Remote</strong><small>{address}</small></div></div>
+      <div className="identity"><span className="logo"><img src="/logo.png" alt="" /></span><div><strong>OBS Remote Deck</strong><small>{address}</small></div></div>
       <div className="connection"><span className={eventOnline ? 'signal online' : 'signal'} />{eventOnline ? 'Tempo real' : 'Polling ativo'}<button onClick={disconnect}>Trocar servidor</button></div>
     </header>
     <main className="dashboard">
@@ -16,8 +17,8 @@ function DashboardComponent({address, data, events, eventOnline, busy, notice, d
         <ProgramPreview sceneName={status.currentScene} connected={status.connected} fetchPreview={fetchPreview} />
         <ScenesPanel scenes={scenes} currentScene={status.currentScene} busy={busy} runAction={runAction} setScene={setScene} />
         <SourcesPanel sources={sources} busy={busy} runAction={runAction} setSourceVisible={setSourceVisible} />
-        <EventsPanel events={events} />
       </div>
+      <ContactFooter />
     </main>
     {notice && <div className={`toast ${notice.kind}`} role="status"><span>{notice.text}</span><button onClick={dismissNotice}>×</button></div>}
   </div>
@@ -121,13 +122,7 @@ const SourcesPanel = memo(function SourcesPanel({sources, busy, runAction, setSo
   return <section className="panel sources-panel"><PanelHeading title="Fontes da cena" count={sources.length} /><div className="source-list">{sources.map(source => <div className="source" key={`${source.sceneName}:${source.id}`}><button className={source.enabled ? 'eye visible' : 'eye'} disabled={!!busy} aria-label={source.enabled ? 'Ocultar fonte' : 'Mostrar fonte'} onClick={() => runAction('source', () => setSourceVisible(source.sceneName, source.name, !source.enabled), `Fonte “${source.name}” ${source.enabled ? 'ocultada' : 'exibida'}.`)}>{source.enabled ? '●' : '○'}</button><strong>{source.name}</strong><span>{source.enabled ? 'Visível' : 'Oculta'}</span></div>)}{!sources.length && <Empty text="Nenhuma fonte na cena atual" />}</div></section>
 })
 
-const EventsPanel = memo(function EventsPanel({events}: Pick<DashboardProps, 'events'>) {
-  return <section className="panel events-panel"><PanelHeading title="Atividade recente" count={events.length} /><div className="event-list">{events.map(event => <div className="event" key={event.id}><time>{new Date(event.time).toLocaleTimeString('pt-BR')}</time><span>{eventLabel(event.type)}</span></div>)}{!events.length && <Empty text="Aguardando eventos em tempo real" />}</div></section>
-})
-
 function Status({title, value, active, alert}: {title: string; value: string; active: boolean; alert?: boolean}) { return <article className={`status ${active ? 'active' : ''} ${alert ? 'alert' : ''}`}><span /><div><small>{title}</small><strong>{value}</strong></div></article> }
 function PanelHeading({title, count}: {title: string; count: number}) { return <div className="panel-heading"><h2>{title}</h2><span>{count}</span></div> }
 function Empty({text}: {text: string}) { return <div className="empty">{text}</div> }
-function eventLabel(type: string) { return type.replace(/^obs\.event\./, '').replace(/^obs\./, '').replaceAll('.', ' · ') }
-
 export const Dashboard = memo(DashboardComponent)

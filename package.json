@@ -1,5 +1,5 @@
 {
-  "name": "obs-control-web",
+  "name": "obs-remote-deck-client",
   "private": true,
   "version": "1.0.0",
   "type": "module",

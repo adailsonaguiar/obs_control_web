@@ -26,8 +26,9 @@ button { color: inherit; }
 .identity > div { display: flex; flex-direction: column; gap: 2px; }
 .identity strong { font-size: 14px; }
 .identity small { color: var(--muted); font-size: 10px; }
-.logo { width: 35px; height: 35px; display: grid; place-items: center; border: 1px solid #696969; border-radius: 4px; background: #404040; font-size: 11px; font-weight: 800; }
+.logo { width: 35px; height: 35px; display: grid; place-items: center; overflow: hidden; }
 .logo.large { width: 48px; height: 48px; font-size: 14px; }
+.logo img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .connection { display: flex; align-items: center; gap: 7px; color: #b1b1b1; font-size: 10px; }
 .signal { width: 7px; height: 7px; border-radius: 50%; background: #777; }
 .signal.online { background: var(--green); }
@@ -86,7 +87,6 @@ button { color: inherit; }
 .preview-warning { position: absolute; top: 10px; right: 10px; padding: 6px 8px; border: 1px solid #6e5658; border-radius: 3px; background: #3b2d2f; color: #d9aeb2; font-size: 9px; }
 .preview-scene { position: absolute; left: 10px; bottom: 10px; max-width: calc(100% - 20px); padding: 6px 9px; display: flex; align-items: center; gap: 7px; overflow: hidden; border: 1px solid #505050; border-radius: 3px; background: rgb(25 25 25 / 88%); font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
 .preview-scene span { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--red); }
-.scenes-panel { grid-row: span 2; }
 .scene-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; padding: 9px; }
 .scene-grid button { min-height: 58px; padding: 9px; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 9px; border: 1px solid #4c4c4c; border-radius: 3px; background: var(--raised); cursor: pointer; text-align: left; }
 .scene-grid button:hover:not(:disabled) { border-color: #686868; background: var(--hover); }
@@ -95,20 +95,17 @@ button { color: inherit; }
 .scene-grid strong { overflow: hidden; font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
 .scene-grid em { color: #b7d9bd; font-size: 7px; font-style: normal; letter-spacing: .08em; }
 
-.source-list, .event-list { max-height: 310px; overflow: auto; }
+.source-list { max-height: 310px; overflow: auto; }
 .source { min-height: 43px; padding: 7px 11px; display: grid; grid-template-columns: 27px 1fr auto; align-items: center; gap: 8px; border-bottom: 1px solid #414141; }
-.source:nth-child(even), .event:nth-child(even) { background: #272727; }
-.source:last-child, .event:last-child { border-bottom: 0; }
+.source:nth-child(even) { background: #272727; }
+.source:last-child { border-bottom: 0; }
 .source strong { overflow: hidden; font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
 .source > span { color: var(--muted); font-size: 8px; text-transform: uppercase; }
 .eye { width: 26px; height: 26px; padding: 0; border: 1px solid #505050; border-radius: 3px; background: #333; color: #898989; cursor: pointer; }
 .eye.visible { color: #9fd4aa; border-color: #4e6b54; background: #304034; }
-.event { min-height: 37px; padding: 7px 12px; display: grid; grid-template-columns: 70px 1fr; align-items: center; gap: 8px; border-bottom: 1px solid #414141; }
-.event time { color: #929292; font-size: 9px; font-variant-numeric: tabular-nums; }
-.event span { overflow: hidden; color: #c1c1c1; font-size: 9px; white-space: nowrap; text-overflow: ellipsis; text-transform: uppercase; }
 .empty { grid-column: 1 / -1; padding: 34px 15px; color: #8d8d8d; text-align: center; font-size: 10px; }
 
-.connect-page { min-height: 100vh; padding: 35px 18px; display: grid; place-items: center; background: #1d1d1d; }
+.connect-page { min-height: 100vh; padding: 35px 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: #1d1d1d; }
 .connect-card { width: min(100%, 470px); border: 1px solid #4a4a4a; border-radius: 4px; background: #292929; }
 .connect-brand { padding: 22px 24px 16px; }
 .connect-brand h1 { font-size: 22px; }
@@ -127,11 +124,15 @@ button { color: inherit; }
 .connect-help { padding: 18px 24px 20px; color: #969696; font-size: 10px; line-height: 1.6; }
 .connect-help strong { color: #c9c9c9; }
 .connect-help ol { margin: 8px 0 0; padding-left: 17px; }
+.contact-footer { padding: 20px 0 0; display: flex; align-items: center; justify-content: center; gap: 8px; color: #858585; font-size: 10px; }
+.connect-page > .contact-footer { padding-top: 0; }
+.contact-footer a { color: #9fc5e3; text-decoration: none; }
+.contact-footer a:hover { color: #c2ddf0; text-decoration: underline; }
+.contact-footer a:focus-visible { outline: 1px solid #77aedb; outline-offset: 3px; border-radius: 1px; }
 
 @media (max-width: 850px) {
   .status-strip { grid-template-columns: 1fr 1fr; }
   .workspace { grid-template-columns: 1fr; }
-  .scenes-panel { grid-row: auto; }
 }
 
 @media (max-width: 560px) {
@@ -146,4 +147,5 @@ button { color: inherit; }
   .scene-grid { grid-template-columns: 1fr; }
   .address-row { grid-template-columns: 1fr 92px; }
   .connect-card form, .connect-brand, .connect-copy, .connect-help { padding-left: 18px; padding-right: 18px; }
+  .contact-footer { flex-wrap: wrap; }
 }

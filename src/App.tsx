@@ -1,5 +1,5 @@
 import {FormEvent, useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import {APIError, ConnectionSettings, OBSControlAPI, ServerEvent} from './api'
+import {APIError, ConnectionSettings, OBSControlAPI} from './api'
 import {ConnectionScreen} from './components/ConnectionScreen'
 import {Dashboard} from './components/Dashboard'
 import {DashboardData, Notice} from './components/types'
@@ -25,7 +25,6 @@ function App() {
   const [settings, setSettings] = useState<ConnectionSettings | null>(null)
   const [remember, setRemember] = useState(initial.remember)
   const [data, setData] = useState<DashboardData>(emptyData)
-  const [events, setEvents] = useState<ServerEvent[]>([])
   const [eventOnline, setEventOnline] = useState(false)
   const [eventRetry, setEventRetry] = useState(0)
   const [busy, setBusy] = useState('')
@@ -67,8 +66,7 @@ function App() {
   useEffect(() => {
     if (!api) return
     let retryTimer = 0
-    const disconnectEvents = api.connectEvents(event => {
-      setEvents(previous => [event, ...previous].slice(0, 25))
+    const disconnectEvents = api.connectEvents(() => {
       refresh(api)
     }, online => {
       setEventOnline(online)
@@ -95,7 +93,7 @@ function App() {
 
   const disconnect = useCallback(() => {
     refreshSequence.current++
-    setSettings(null); setData(emptyData); setEvents([]); setEventOnline(false)
+    setSettings(null); setData(emptyData); setEventOnline(false)
     sessionStorage.removeItem(`${storageKey}.token`)
     setDraft(previous => ({...previous, token: remember ? previous.token : ''}))
   }, [remember])
@@ -111,7 +109,7 @@ function App() {
   if (!settings || !api || !controls) return <ConnectionScreen draft={draft} setDraft={setDraft} remember={remember} setRemember={setRemember} connecting={connecting} notice={notice} onSubmit={connect} />
 
   return <Dashboard
-    address={`${settings.host}:${settings.port}`} data={data} events={events} eventOnline={eventOnline} busy={busy} notice={notice}
+    address={`${settings.host}:${settings.port}`} data={data} eventOnline={eventOnline} busy={busy} notice={notice}
     dismissNotice={dismissNotice} disconnect={disconnect} runAction={runAction}
     setScene={controls.setScene} setSourceVisible={controls.setSourceVisible}
     setRecording={controls.setRecording} setStreaming={controls.setStreaming}

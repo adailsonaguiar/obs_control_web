@@ -1,4 +1,4 @@
-# OBS Remote Control
+# OBS Remote Deck
 
 Interface web responsiva para controlar remotamente o OBS Studio por meio do **OBS Control Server**. O navegador não se conecta diretamente ao OBS: todas as operações passam pela API autenticada do servidor local.
 

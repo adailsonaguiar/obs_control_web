@@ -2,6 +2,10 @@
 
 Portal de ferramentas para streaming. A landing page está disponível em `/` e o **OBS Deck**, interface web responsiva para controlar remotamente o OBS Studio, em `/deck`.
 
+## Planejamento do produto
+
+O documento [Plano de novas funcionalidades](docs/PLANO_NOVAS_FUNCIONALIDADES.md) descreve a evolução recomendada para operação segura fora da rede local, confiabilidade durante transmissões, monitoramento, áudio, permissões, macros e critérios de aceite.
+
 ## Recursos
 
 - Configuração por IP, porta e token.

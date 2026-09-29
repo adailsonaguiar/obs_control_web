@@ -1,0 +1,100 @@
+# OBS Remote Control
+
+Interface web responsiva para controlar remotamente o OBS Studio por meio do **OBS Control Server**. O navegador não se conecta diretamente ao OBS: todas as operações passam pela API autenticada do servidor local.
+
+## Recursos
+
+- Configuração por IP, porta e token.
+- Status do OBS, cena ativa, gravação e transmissão.
+- Iniciar e parar gravação.
+- Iniciar e parar transmissão.
+- Listar e trocar cenas.
+- Mostrar e ocultar fontes da cena atual.
+- Atualização em tempo real usando `/events`.
+- Polling automático quando o WebSocket estiver indisponível.
+- Reconexão automática do canal de eventos.
+- Layout responsivo para computador, tablet e celular.
+- Token mantido apenas durante a sessão por padrão.
+
+## Pré-requisitos
+
+- Node.js 20 ou superior.
+- OBS Control Server V2 em execução no computador do OBS.
+- Os dispositivos devem estar conectados à mesma rede local.
+
+## Preparar o servidor
+
+No aplicativo desktop **OBS Control Server**:
+
+1. Abra **Configurações**.
+2. Ative **Permitir acesso pela rede local**.
+3. Salve as configurações.
+4. Reinicie o servidor local pelo painel.
+5. Copie o **Token da API**.
+6. Descubra o IP local do computador, por exemplo `192.168.1.20`.
+
+O firewall do sistema operacional deve permitir conexões de entrada na porta configurada, que por padrão é `3456`.
+
+## Executar em desenvolvimento
+
+```bash
+cd obs_control_web
+npm install
+npm run dev
+```
+
+O Vite escuta em todas as interfaces de rede. Os endereços serão exibidos no terminal:
+
+```text
+Local:   http://localhost:5173/
+Network: http://192.168.1.20:5173/
+```
+
+Abra o endereço `Network` em outro dispositivo conectado à mesma rede. Na tela de conexão, informe:
+
+- IP: o endereço do computador onde o servidor está rodando.
+- Porta: `3456`, salvo alteração no servidor.
+- Token: o token mostrado nas configurações do servidor.
+
+## Build de produção
+
+```bash
+npm run build
+```
+
+Os arquivos estáticos serão gerados em `dist`. Para validá-los na rede local:
+
+```bash
+npm run preview
+```
+
+O preview utiliza a porta `4173`. Para produção real, publique o conteúdo de `dist` em qualquer servidor de arquivos estáticos acessível na rede.
+
+## Testes
+
+```bash
+npm test
+npm run build
+npm audit
+```
+
+## Segurança
+
+- Não exponha as portas `3456`, `5173` ou `4173` diretamente à internet.
+- Use apenas uma rede local confiável ou uma VPN privada.
+- Mantenha um token longo e exclusivo no OBS Control Server.
+- A opção **Lembrar o token** salva a credencial no armazenamento local do navegador. Deixe-a desmarcada em dispositivos compartilhados.
+- O token do WebSocket é enviado na URL por limitação da API WebSocket dos navegadores. Use somente a rede local confiável.
+- Se a interface web for publicada via HTTPS, o navegador poderá bloquear chamadas HTTP/WS ao servidor por conteúdo misto. Nesse cenário, coloque a API atrás de um proxy HTTPS/WSS.
+
+## Arquitetura
+
+```text
+Celular / Tablet / Navegador
+          │ HTTP + WebSocket
+          ▼
+OBS Control Server :3456
+          │ obs-websocket
+          ▼
+      OBS Studio :4455
+```

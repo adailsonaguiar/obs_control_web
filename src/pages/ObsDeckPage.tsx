@@ -11,11 +11,11 @@ function savedConnection(): {settings: ConnectionSettings; remember: boolean} {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) || '{}') as Partial<ConnectionSettings> & {remember?: boolean}
     return {
-      settings: {host: saved.host || location.hostname || '127.0.0.1', port: saved.port || 3456, token: saved.token || sessionStorage.getItem(`${storageKey}.token`) || ''},
+      settings: {host: saved.host || '127.0.0.1', port: saved.port || 3456, token: saved.token || sessionStorage.getItem(`${storageKey}.token`) || ''},
       remember: Boolean(saved.remember && saved.token),
     }
   } catch {
-    return {settings: {host: location.hostname || '127.0.0.1', port: 3456, token: ''}, remember: false}
+    return {settings: {host: '127.0.0.1', port: 3456, token: ''}, remember: false}
   }
 }
 

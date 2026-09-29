@@ -32,4 +32,14 @@ describe('OBSControlAPI', () => {
     await new OBSControlAPI({host: 'localhost', port: 3456, token: 'secret'}).health()
     expect(new Headers(fetchMock.mock.calls[0][1]?.headers).has('Authorization')).toBe(false)
   })
+
+  it('carrega a prévia autenticada como imagem', async () => {
+    const image = new Blob(['jpeg'], {type: 'image/jpeg'})
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(image, {status: 200}))
+    const result = await new OBSControlAPI({host: 'localhost', port: 3456, token: 'secret'}).preview('Cena principal', 640)
+    const [url, options] = fetchMock.mock.calls[0]
+    expect(url).toBe('http://localhost:3456/obs/preview?sceneName=Cena+principal&width=640')
+    expect(new Headers(options?.headers).get('Authorization')).toBe('Bearer secret')
+    expect(result.type).toBe('image/jpeg')
+  })
 })

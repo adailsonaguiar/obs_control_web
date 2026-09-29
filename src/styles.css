@@ -78,6 +78,14 @@ button { color: inherit; }
 .panel-heading { height: 48px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: #252525; }
 .panel-heading h2 { margin: 0; font-size: 12px; }
 .panel-heading span { min-width: 24px; padding: 3px 6px; border: 1px solid #5a5a5a; border-radius: 3px; color: #ccc; text-align: center; font-size: 9px; }
+.panel-heading .live-label { color: #efb2b8; border-color: #75454a; background: #3f292c; }
+.preview-panel { grid-column: 1 / -1; }
+.program-preview { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #111; }
+.program-preview img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.preview-placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: #858585; font-size: 10px; }
+.preview-warning { position: absolute; top: 10px; right: 10px; padding: 6px 8px; border: 1px solid #6e5658; border-radius: 3px; background: #3b2d2f; color: #d9aeb2; font-size: 9px; }
+.preview-scene { position: absolute; left: 10px; bottom: 10px; max-width: calc(100% - 20px); padding: 6px 9px; display: flex; align-items: center; gap: 7px; overflow: hidden; border: 1px solid #505050; border-radius: 3px; background: rgb(25 25 25 / 88%); font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
+.preview-scene span { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--red); }
 .scenes-panel { grid-row: span 2; }
 .scene-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; padding: 9px; }
 .scene-grid button { min-height: 58px; padding: 9px; display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 9px; border: 1px solid #4c4c4c; border-radius: 3px; background: var(--raised); cursor: pointer; text-align: left; }

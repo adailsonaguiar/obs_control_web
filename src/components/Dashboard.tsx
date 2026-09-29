@@ -1,7 +1,7 @@
-import {memo} from 'react'
+import {memo, useEffect, useRef, useState} from 'react'
 import {DashboardProps} from './types'
 
-function DashboardComponent({address, data, events, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming}: DashboardProps) {
+function DashboardComponent({address, data, events, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming, fetchPreview}: DashboardProps) {
   const {status, scenes, sources} = data
   return <div className="app-shell">
     <header className="topbar">
@@ -13,6 +13,7 @@ function DashboardComponent({address, data, events, eventOnline, busy, notice, d
       <StatusStrip status={status} eventOnline={eventOnline} />
       <OutputControls status={status} busy={busy} runAction={runAction} setRecording={setRecording} setStreaming={setStreaming} />
       <div className="workspace">
+        <ProgramPreview sceneName={status.currentScene} connected={status.connected} fetchPreview={fetchPreview} />
         <ScenesPanel scenes={scenes} currentScene={status.currentScene} busy={busy} runAction={runAction} setScene={setScene} />
         <SourcesPanel sources={sources} busy={busy} runAction={runAction} setSourceVisible={setSourceVisible} />
         <EventsPanel events={events} />
@@ -21,6 +22,52 @@ function DashboardComponent({address, data, events, eventOnline, busy, notice, d
     {notice && <div className={`toast ${notice.kind}`} role="status"><span>{notice.text}</span><button onClick={dismissNotice}>×</button></div>}
   </div>
 }
+
+const ProgramPreview = memo(function ProgramPreview({sceneName, connected, fetchPreview}: {sceneName: string; connected: boolean; fetchPreview: DashboardProps['fetchPreview']}) {
+  const [imageURL, setImageURL] = useState('')
+  const [unavailable, setUnavailable] = useState(false)
+  const currentURL = useRef('')
+
+  useEffect(() => {
+    let cancelled = false
+    let timer = 0
+    const update = async () => {
+      if (!connected || !sceneName || document.hidden) return
+      try {
+        const blob = await fetchPreview(sceneName)
+        if (cancelled) return
+        const nextURL = URL.createObjectURL(blob)
+        const previousURL = currentURL.current
+        currentURL.current = nextURL
+        setImageURL(nextURL)
+        setUnavailable(false)
+        if (previousURL) URL.revokeObjectURL(previousURL)
+      } catch {
+        if (!cancelled) setUnavailable(true)
+      }
+    }
+    void update()
+    timer = window.setInterval(update, 2000)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [connected, fetchPreview, sceneName])
+
+  useEffect(() => () => {
+    if (currentURL.current) URL.revokeObjectURL(currentURL.current)
+  }, [])
+
+  return <section className="panel preview-panel">
+    <div className="panel-heading"><h2>Pré-visualização do programa</h2><span className="live-label">NO AR</span></div>
+    <div className="program-preview">
+      {imageURL && <img src={imageURL} alt={`Saída atual do OBS: ${sceneName}`} />}
+      {!imageURL && <div className="preview-placeholder">{connected ? 'Carregando prévia…' : 'OBS desconectado'}</div>}
+      {unavailable && <div className="preview-warning">Prévia temporariamente indisponível</div>}
+      <div className="preview-scene"><span />{sceneName || 'Sem cena no ar'}</div>
+    </div>
+  </section>
+})
 
 const StatusStrip = memo(function StatusStrip({status, eventOnline}: {status: DashboardProps['data']['status']; eventOnline: boolean}) {
   return <section className="status-strip">

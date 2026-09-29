@@ -46,6 +46,10 @@ export class OBSControlAPI {
     const query = new URLSearchParams({sceneName})
     return (await this.request<{sources: Source[]}>(`/obs/sources?${query}`)).sources
   }
+  preview(sceneName: string, width = 960) {
+    const query = new URLSearchParams({sceneName, width: String(width)})
+    return this.requestBlob(`/obs/preview?${query}`)
+  }
   setScene(sceneName: string) { return this.post('/obs/scene', {sceneName}) }
   setSourceVisible(sceneName: string, sourceName: string, visible: boolean) {
     return this.post(`/obs/source/${visible ? 'show' : 'hide'}`, {sceneName, sourceName})
@@ -66,6 +70,20 @@ export class OBSControlAPI {
 
   private post<T = {ok: boolean}>(path: string, body?: unknown) {
     return this.request<T>(path, {method: 'POST', body: body ? JSON.stringify(body) : undefined})
+  }
+
+  private async requestBlob(path: string): Promise<Blob> {
+    let response: Response
+    try {
+      response = await fetch(`${this.baseURL}${path}`, {headers: {Authorization: `Bearer ${this.settings.token}`}})
+    } catch {
+      throw new APIError('Não foi possível carregar a prévia do OBS.', 0)
+    }
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({})) as {error?: string}
+      throw new APIError(data.error || `Erro HTTP ${response.status}`, response.status)
+    }
+    return response.blob()
   }
 
   private async request<T>(path: string, options: RequestInit & {authenticated?: boolean} = {}): Promise<T> {

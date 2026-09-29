@@ -1,6 +1,6 @@
 # OBS Stream Tools
 
-Portal de ferramentas para streaming. A landing page está disponível em `/` e o **OBS Deck**, interface web responsiva para controlar remotamente o OBS Studio, em `/obsdeck`.
+Portal de ferramentas para streaming. A landing page está disponível em `/` e o **OBS Deck**, interface web responsiva para controlar remotamente o OBS Studio, em `/deck`.
 
 ## Recursos
 
@@ -72,7 +72,15 @@ npm run preview
 
 O preview utiliza a porta `4173`. Para produção real, publique o conteúdo de `dist` em qualquer servidor de arquivos estáticos acessível na rede.
 
-O servidor de hospedagem deve redirecionar rotas desconhecidas para `index.html`, permitindo acesso direto a `/obsdeck`.
+O servidor de hospedagem deve redirecionar rotas desconhecidas para `index.html`, permitindo acesso direto a `/deck`.
+
+## SEO e descoberta por buscadores
+
+Antes do build de produção, defina `VITE_PUBLIC_SITE_URL` com a origem pública completa da aplicação, sem caminho ou barra final. Exemplo: `https://tools.suaempresa.com`.
+
+Essa configuração é usada para URLs canônicas, dados estruturados, previews sociais, `robots.txt` e `sitemap.xml`. O build também gera `llms.txt`, com um resumo legível por crawlers e agentes de inteligência artificial. Sem `VITE_PUBLIC_SITE_URL`, o sitemap não é gerado para evitar divulgar uma URL incorreta.
+
+Depois da publicação, cadastre `${VITE_PUBLIC_SITE_URL}/sitemap.xml` no Google Search Console e nas ferramentas equivalentes dos demais buscadores.
 
 ## Integração de pagamentos
 

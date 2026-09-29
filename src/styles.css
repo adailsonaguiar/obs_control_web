@@ -47,6 +47,10 @@ button { color: inherit; }
 .notice.success { color: #bddfc4; border-color: #506e56; background: #2b392e; }
 .notice.error { color: #efb2b8; border-color: #75454a; background: #3f292c; }
 .notice button { border: 0; background: transparent; cursor: pointer; }
+.toast { position: fixed; right: 18px; bottom: 18px; z-index: 30; width: min(390px, calc(100vw - 36px)); padding: 11px 13px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #555; border-radius: 3px; background: #303030; color: #ddd; font-size: 11px; }
+.toast.success { color: #bddfc4; border-color: #506e56; background: #2b392e; }
+.toast.error { color: #efb2b8; border-color: #75454a; background: #3f292c; }
+.toast button { border: 0; background: transparent; cursor: pointer; }
 
 .status-strip { display: grid; grid-template-columns: 1.5fr repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .status { min-height: 66px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 3px; background: var(--panel); }

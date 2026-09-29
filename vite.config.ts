@@ -18,7 +18,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', 'VITE_')
   return {
     plugins: [react(), discoveryFiles(env.VITE_PUBLIC_SITE_URL || '')],
-    server: {host: '0.0.0.0', port: 5173},
+    server: {host: '0.0.0.0', port: 5175},
     preview: {host: '0.0.0.0', port: 4173},
     build: {target: 'es2022'},
   }

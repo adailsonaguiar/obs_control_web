@@ -30,7 +30,9 @@ export function ObsDeckPage() {
   const [busy, setBusy] = useState('')
   const [notice, setNotice] = useState<Notice | null>(null)
   const [connecting, setConnecting] = useState(false)
+  const [activeSection, setActiveSection] = useState<'control' | 'health' | 'audio' | 'studio' | 'diagnostics'>('control')
   const refreshSequence = useRef(0)
+  const eventRefreshTimer = useRef(0)
   const api = useMemo(() => settings ? new OBSControlAPI(settings) : null, [settings])
   const controls = useMemo(() => api ? {
     setScene: (sceneName: string) => api.setScene(sceneName),
@@ -43,44 +45,73 @@ export function ObsDeckPage() {
     fetchPreview: (sceneName: string, width?: number, quality?: number) => api.preview(sceneName, width, quality),
   } : null, [api])
 
-  const refresh = useCallback(async (client = api) => {
+  const refresh = useCallback(async (client = api, section = activeSection) => {
     if (!client) return
     const sequence = ++refreshSequence.current
     try {
       const status = await client.status()
-      const [scenes, sources, telemetry, audio, studio, diagnostics] = status.connected
-        ? await Promise.all([
-          client.scenes(), client.sources(status.currentScene),
-          client.telemetry().catch(() => null), client.audioInputs().catch(() => []),
-          client.studioMode().catch(() => null), client.diagnostics().catch(() => null),
-        ])
-        : [[], [], null, [], null, null]
-      if (sequence === refreshSequence.current) setData({status, scenes, sources, telemetry, audio, studio, diagnostics})
+      const [scenes, sources] = status.connected ? await Promise.all([client.scenes(), client.sources(status.currentScene)]) : [[], []]
+      if (sequence !== refreshSequence.current) return
+      setData(previous => ({...previous, status, scenes, sources}))
+      if (!status.connected) return
+      if (section === 'health') {
+        const telemetry = await client.telemetry().catch(() => null)
+        if (sequence === refreshSequence.current) setData(previous => ({...previous, telemetry}))
+      } else if (section === 'audio') {
+        const audio = await client.audioInputs().catch(() => [])
+        if (sequence === refreshSequence.current) setData(previous => ({...previous, audio}))
+      } else if (section === 'studio') {
+        const studio = await client.studioMode().catch(() => null)
+        if (sequence === refreshSequence.current) setData(previous => ({...previous, studio}))
+      } else if (section === 'diagnostics') {
+        const diagnostics = await client.diagnostics().catch(() => null)
+        if (sequence === refreshSequence.current) setData(previous => ({...previous, diagnostics}))
+      }
     } catch (error) {
       if (sequence !== refreshSequence.current) return
       setNotice({kind: 'error', text: error instanceof Error ? error.message : String(error)})
       if (error instanceof APIError && error.status === 401) setSettings(null)
     }
-  }, [api])
+  }, [activeSection, api])
+
+  const refreshSection = useCallback(async (client = api, section = activeSection) => {
+    if (!client) return
+    if (section === 'health') {
+      const telemetry = await client.telemetry().catch(() => null)
+      setData(previous => ({...previous, telemetry}))
+    } else if (section === 'audio') {
+      const audio = await client.audioInputs().catch(() => [])
+      setData(previous => ({...previous, audio}))
+    }
+  }, [activeSection, api])
 
   useEffect(() => {
     if (!api) return
-    refresh(api)
-    const timer = window.setInterval(() => refresh(api), 4000)
+    refresh(api, activeSection)
+  }, [activeSection, api, refresh])
+
+  useEffect(() => {
+    if (!api) return
+    const interval = eventOnline ? (activeSection === 'health' || activeSection === 'audio' ? 3000 : 0) : 10000
+    if (!interval) return
+    const update = () => eventOnline ? refreshSection(api, activeSection) : refresh(api, activeSection)
+    const timer = window.setInterval(update, interval)
     return () => window.clearInterval(timer)
-  }, [api, refresh])
+  }, [activeSection, api, eventOnline, refresh, refreshSection])
 
   useEffect(() => {
     if (!api) return
     let retryTimer = 0
-    const disconnectEvents = api.connectEvents(() => {
-      refresh(api)
+    const disconnectEvents = api.connectEvents(event => {
+      if (event.type === 'obs.event.InputVolumeMeters') return
+      window.clearTimeout(eventRefreshTimer.current)
+      eventRefreshTimer.current = window.setTimeout(() => refresh(api, activeSection), 400)
     }, online => {
       setEventOnline(online)
       if (!online) retryTimer = window.setTimeout(() => setEventRetry(value => value + 1), 3000)
     })
-    return () => { window.clearTimeout(retryTimer); disconnectEvents() }
-  }, [api, eventRetry, refresh])
+    return () => { window.clearTimeout(retryTimer); window.clearTimeout(eventRefreshTimer.current); disconnectEvents() }
+  }, [activeSection, api, eventRetry, refresh])
 
   async function connect(event: FormEvent) {
     event.preventDefault(); setConnecting(true); setNotice(null)
@@ -126,6 +157,6 @@ export function ObsDeckPage() {
     setScene={controls.setScene} setSourceVisible={controls.setSourceVisible}
     setRecording={controls.setRecording} setStreaming={controls.setStreaming}
     setAudio={controls.setAudio} setPreviewScene={controls.setPreviewScene} transition={controls.transition} refreshDiagnostics={refreshDiagnostics}
-    fetchPreview={controls.fetchPreview}
+    fetchPreview={controls.fetchPreview} activeSection={activeSection} setActiveSection={setActiveSection}
   />
 }

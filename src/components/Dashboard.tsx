@@ -2,9 +2,8 @@ import {CSSProperties, memo, PointerEvent, useEffect, useRef, useState} from 're
 import {ContactFooter} from './ContactFooter'
 import {DashboardProps} from './types'
 
-function DashboardComponent({address, data, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming, setAudio, setPreviewScene, transition, refreshDiagnostics, fetchPreview}: DashboardProps) {
+function DashboardComponent({address, data, eventOnline, busy, notice, dismissNotice, disconnect, runAction, setScene, setSourceVisible, setRecording, setStreaming, setAudio, setPreviewScene, transition, refreshDiagnostics, fetchPreview, activeSection: tab, setActiveSection}: DashboardProps) {
   const {status, scenes, sources} = data
-  const [tab, setTab] = useState<'control' | 'health' | 'audio' | 'studio' | 'diagnostics'>('control')
   const [criticalAction, setCriticalAction] = useState<'recording' | 'streaming' | null>(null)
   const commandId = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`
   const confirmCritical = () => {
@@ -20,7 +19,7 @@ function DashboardComponent({address, data, eventOnline, busy, notice, dismissNo
     </header>
     <main className="dashboard">
       <div className="page-heading"><div><p>CONTROLE REMOTO</p><h1>Painel do OBS</h1></div><div className={`obs-state ${status.connected ? 'online' : ''}`}><span />{status.connected ? 'OBS conectado' : 'OBS desconectado'}</div></div>
-      <nav className="deck-nav" aria-label="Seções do painel">{([['control', 'Controle'], ['health', 'Saúde'], ['audio', 'Áudio'], ['studio', 'Studio'], ['diagnostics', 'Diagnóstico']] as const).map(([id, label]) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>{label}</button>)}</nav>
+      <nav className="deck-nav" aria-label="Seções do painel">{([['control', 'Controle'], ['health', 'Saúde'], ['audio', 'Áudio'], ['studio', 'Studio'], ['diagnostics', 'Diagnóstico']] as const).map(([id, label]) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => setActiveSection(id)}>{label}</button>)}</nav>
       {tab === 'control' && <><StatusStrip status={status} eventOnline={eventOnline} />
       <OutputControls status={status} busy={busy} runAction={runAction} setRecording={setRecording} setStreaming={setStreaming} requestCritical={setCriticalAction} commandId={commandId} />
       <div className="workspace">
@@ -83,7 +82,7 @@ const ProgramPreview = memo(function ProgramPreview({sceneName, connected, fetch
         } else if (elapsed < 350 && blob.size < 120_000 && ++fastFrames >= 5) {
           profile = {width: 640, quality: 50}
         }
-        schedule(Math.max(120, 600 - elapsed))
+        schedule(Math.max(1000, 1000 - elapsed))
       } catch {
         if (cancelled) return
         failures++

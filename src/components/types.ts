@@ -21,4 +21,6 @@ export type DashboardProps = {
   transition: (duration: number, commandId: string) => Promise<unknown>
   refreshDiagnostics: () => Promise<void>
   fetchPreview: (sceneName: string, width?: number, quality?: number) => Promise<Blob>
+  activeSection: 'control' | 'health' | 'audio' | 'studio' | 'diagnostics'
+  setActiveSection: (section: 'control' | 'health' | 'audio' | 'studio' | 'diagnostics') => void
 }

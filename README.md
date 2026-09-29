@@ -74,6 +74,10 @@ O preview utiliza a porta `4173`. Para produção real, publique o conteúdo de 
 
 O servidor de hospedagem deve redirecionar rotas desconhecidas para `index.html`, permitindo acesso direto a `/deck`.
 
+### Netlify
+
+O arquivo `public/_redirects` configura automaticamente o fallback de SPA no Netlify. Assim, rotas como `/deck` podem ser abertas diretamente ou recarregadas sem retornar erro 404. Publique o diretório `dist` gerado pelo build.
+
 ## SEO e descoberta por buscadores
 
 Antes do build de produção, defina `VITE_PUBLIC_SITE_URL` com a origem pública completa da aplicação, sem caminho ou barra final. Exemplo: `https://tools.suaempresa.com`.

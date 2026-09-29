@@ -84,6 +84,12 @@ button { color: inherit; }
 .web-ptz-pad button, .web-ptz-zoom button { min-height: 58px; border: 1px solid #595959; border-radius: 4px; background: var(--raised); color: #eee; cursor: pointer; touch-action: none; user-select: none; }
 .web-ptz-pad button { font-size: 22px; }
 .web-ptz-pad button:active, .web-ptz-zoom button:active { border-color: var(--blue); background: #334b5e; }
+.web-joystick-wrap { min-height: 222px; display: grid; place-items: center; padding: 18px; }
+.web-joystick { position: relative; width: 210px; height: 210px; overflow: hidden; border: 1px solid #59646b; border-radius: 50%; background: radial-gradient(circle, #36434b 0 12%, #292f33 13% 48%, #222629 49%); cursor: grab; touch-action: none; user-select: none; }
+.web-joystick.dragging { cursor: grabbing; border-color: var(--blue); }
+.joystick-axis { position: absolute; left: 50%; top: 50%; background: rgb(255 255 255 / 9%); pointer-events: none; }.joystick-axis.horizontal { width: 80%; height: 1px; transform: translate(-50%, -50%); }.joystick-axis.vertical { width: 1px; height: 80%; transform: translate(-50%, -50%); }
+.joystick-knob { position: absolute; left: calc(50% - 23px); top: calc(50% - 23px); width: 46px; height: 46px; border: 2px solid #9accee; border-radius: 50%; background: #3d89be; box-shadow: 0 5px 16px rgb(0 0 0 / 42%); transition: transform 90ms ease-out; pointer-events: none; }
+.web-joystick.dragging .joystick-knob { transition-duration: 55ms; }
 .web-ptz-zoom { min-height: 222px; padding: 26px; display: grid; align-content: center; gap: 12px; }
 .web-ptz-zoom button { font-size: 12px; font-weight: 700; }
 .ptz-help { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }

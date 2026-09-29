@@ -87,7 +87,7 @@ function App() {
       if (remember) sessionStorage.removeItem(`${storageKey}.token`)
       else sessionStorage.setItem(`${storageKey}.token`, normalized.token)
       setDraft(normalized); setSettings(normalized)
-      setNotice({kind: 'success', text: 'Conectado ao OBS Control Server.'})
+      setNotice({kind: 'success', text: 'Conectado ao OBS Remote Deck.'})
     } catch (error) {
       setNotice({kind: 'error', text: error instanceof Error ? error.message : String(error)})
     } finally { setConnecting(false) }

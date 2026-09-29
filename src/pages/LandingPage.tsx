@@ -30,11 +30,12 @@ export function LandingPage() {
       </a>
       <nav aria-label="Navegação principal">
         <a href="#ferramentas">Ferramentas</a>
+        <a href="#servidor">Servidor</a>
         <a href="#instalacao">Instalação</a>
         <a href="#recursos">Recursos</a>
         <a href="#planos">Planos</a>
       </nav>
-      <a className="landing-header-cta" href="/obsdeck">Abrir OBS Deck</a>
+      <a className="landing-header-cta" href="/deck">Abrir OBS Deck</a>
     </header>
 
     <main>
@@ -44,7 +45,7 @@ export function LandingPage() {
           <h1>Seu OBS mais simples.<br /><em>Seu conteúdo no controle.</em></h1>
           <p className="hero-description">Uma coleção de ferramentas práticas para operar, automatizar e evoluir suas transmissões sem interromper o que realmente importa.</p>
           <div className="hero-actions">
-            <a className="primary-action" href="/obsdeck">Usar OBS Deck <span>→</span></a>
+            <a className="primary-action" href="/deck">Usar OBS Deck <span>→</span></a>
             <a className="secondary-action" href="#ferramentas">Conhecer as ferramentas</a>
           </div>
           <div className="hero-notes"><span>✓ Sem instalação no celular</span><span>✓ Conexão pela rede local</span></div>
@@ -63,11 +64,25 @@ export function LandingPage() {
           <div className="tool-number">01</div>
           <div className="tool-icon"><span>●</span><span>■</span><span>◉</span></div>
           <div className="tool-copy"><p>DISPONÍVEL AGORA</p><h3>OBS Deck</h3><span>Controle remoto para cenas, fontes, gravação e transmissão — direto do navegador.</span></div>
-          <a href="/obsdeck" aria-label="Abrir OBS Deck">→</a>
+          <a href="/deck" aria-label="Abrir OBS Deck">→</a>
         </article>
         <div className="coming-tools">
           <article><span>02</span><div><small>EM DESENVOLVIMENTO</small><strong>Automação</strong><p>Rotinas e ações para seu fluxo.</p></div></article>
           <article><span>03</span><div><small>EM BREVE</small><strong>Monitoramento</strong><p>Métricas essenciais em um só lugar.</p></div></article>
+        </div>
+      </section>
+
+      <section className="landing-showcase" id="servidor">
+        <div className="showcase-heading"><div><p className="eyebrow">CONHEÇA O SERVIDOR</p><h2>Tudo configurado<br />em um só lugar.</h2></div><p>Gerencie a conexão local, acompanhe o estado do OBS e encontre instruções detalhadas sem sair do aplicativo servidor.</p></div>
+        <div className="showcase-gallery">
+          <figure className="showcase-shot showcase-primary">
+            <a href="/Screenshot1.png" target="_blank" rel="noreferrer" aria-label="Ampliar captura do painel do servidor"><img src="/Screenshot1.png" alt="Painel do OBS Remote Deck Server mostrando o servidor online, o OBS conectado e os controles rápidos" loading="lazy" decoding="async" /></a>
+            <figcaption><span>01</span><div><strong>Painel de controle</strong><small>Status e ações rápidas em tempo real</small></div></figcaption>
+          </figure>
+          <figure className="showcase-shot showcase-secondary">
+            <a href="/Screenshot2.png" target="_blank" rel="noreferrer" aria-label="Ampliar captura das instruções de conexão"><img src="/Screenshot2.png" alt="Tela do OBS Remote Deck Server com instruções passo a passo para conectar ao OBS Studio" loading="lazy" decoding="async" /></a>
+            <figcaption><span>02</span><div><strong>Configuração guiada</strong><small>Conexão com o OBS passo a passo</small></div></figcaption>
+          </figure>
         </div>
       </section>
 
@@ -91,7 +106,7 @@ export function LandingPage() {
       <section className="landing-pricing" id="planos">
         <div className="pricing-heading"><p className="eyebrow">PLANOS</p><h2>Comece agora.<br />Evolua quando precisar.</h2><p>Use o controle essencial gratuitamente e acompanhe a chegada das ferramentas avançadas.</p></div>
         <div className="pricing-grid">
-          <article><span className="plan-label">ESSENCIAL</span><h3>Grátis</h3><strong>R$ 0 <small>/ para sempre</small></strong><p>O necessário para controlar seu OBS de qualquer tela na rede local.</p><ul><li>OBS Deck completo</li><li>Cenas, fontes e saídas</li><li>Prévia em tempo real</li></ul><a className="plan-action" href="/obsdeck">Começar agora</a></article>
+          <article><span className="plan-label">ESSENCIAL</span><h3>Grátis</h3><strong>R$ 0 <small>/ para sempre</small></strong><p>O necessário para controlar seu OBS de qualquer tela na rede local.</p><ul><li>OBS Deck completo</li><li>Cenas, fontes e saídas</li><li>Prévia em tempo real</li></ul><a className="plan-action" href="/deck">Começar agora</a></article>
           <article className="pro-plan"><span className="plan-label">PARA CRIADORES</span><h3>{proPlan.name}</h3><strong>{proPlan.priceLabel}</strong><p>{proPlan.description}</p><ul>{proPlan.features.map(feature => <li key={feature}>{feature}</li>)}</ul>{isBillingConfigured
             ? <button className="plan-action" disabled={checkoutState === 'loading'} onClick={startCheckout}>{checkoutState === 'loading' ? 'Abrindo checkout…' : 'Assinar plano Pro'}</button>
             : <a className="plan-action" href="mailto:verolabso@gmail.com?subject=Interesse%20no%20OBS%20Stream%20Tools%20Pro">Tenho interesse</a>}

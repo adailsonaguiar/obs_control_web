@@ -6,10 +6,10 @@ function App() {
   const path = window.location.pathname.replace(/\/+$/, '') || '/'
 
   useEffect(() => {
-    document.title = path === '/obsdeck' ? 'OBS Deck | OBS Stream Tools' : 'OBS Stream Tools'
+    document.title = path === '/deck' ? 'OBS Deck | OBS Stream Tools' : 'OBS Stream Tools'
   }, [path])
 
-  if (path === '/obsdeck') return <ObsDeckPage />
+  if (path === '/deck') return <ObsDeckPage />
   return <LandingPage />
 }
 

@@ -31,26 +31,54 @@ const ProgramPreview = memo(function ProgramPreview({sceneName, connected, fetch
   useEffect(() => {
     let cancelled = false
     let timer = 0
+    let failures = 0
+    let fastFrames = 0
+    let profile = {width: window.innerWidth <= 560 ? 480 : 640, quality: window.innerWidth <= 560 ? 42 : 50}
+
+    const schedule = (delay: number) => {
+      if (!cancelled) timer = window.setTimeout(update, delay)
+    }
     const update = async () => {
-      if (!connected || !sceneName || document.hidden) return
+      if (!connected || !sceneName || document.hidden) {
+        schedule(1000)
+        return
+      }
+      const startedAt = performance.now()
       try {
-        const blob = await fetchPreview(sceneName)
-        if (cancelled) return
+        const blob = await fetchPreview(sceneName, profile.width, profile.quality)
         const nextURL = URL.createObjectURL(blob)
+        const decoded = new Image()
+        decoded.src = nextURL
+        await decoded.decode()
+        if (cancelled) {
+          URL.revokeObjectURL(nextURL)
+          return
+        }
         const previousURL = currentURL.current
         currentURL.current = nextURL
         setImageURL(nextURL)
         setUnavailable(false)
         if (previousURL) URL.revokeObjectURL(previousURL)
+        const elapsed = performance.now() - startedAt
+        failures = 0
+        if (elapsed > 900 || blob.size > 180_000) {
+          profile = {width: 480, quality: 42}
+          fastFrames = 0
+        } else if (elapsed < 350 && blob.size < 120_000 && ++fastFrames >= 5) {
+          profile = {width: 640, quality: 50}
+        }
+        schedule(Math.max(120, 600 - elapsed))
       } catch {
-        if (!cancelled) setUnavailable(true)
+        if (cancelled) return
+        failures++
+        setUnavailable(true)
+        schedule(Math.min(5000, 1000 * failures))
       }
     }
     void update()
-    timer = window.setInterval(update, 2000)
     return () => {
       cancelled = true
-      window.clearInterval(timer)
+      window.clearTimeout(timer)
     }
   }, [connected, fetchPreview, sceneName])
 

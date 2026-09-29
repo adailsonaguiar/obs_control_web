@@ -38,7 +38,7 @@ function App() {
     setSourceVisible: (sceneName: string, sourceName: string, visible: boolean) => api.setSourceVisible(sceneName, sourceName, visible),
     setRecording: (active: boolean) => api.setRecording(active),
     setStreaming: (active: boolean) => api.setStreaming(active),
-    fetchPreview: (sceneName: string, width?: number) => api.preview(sceneName, width),
+    fetchPreview: (sceneName: string, width?: number, quality?: number) => api.preview(sceneName, width, quality),
   } : null, [api])
 
   const refresh = useCallback(async (client = api) => {

@@ -17,5 +17,5 @@ export type DashboardProps = {
   setSourceVisible: (sceneName: string, sourceName: string, visible: boolean) => Promise<unknown>
   setRecording: (active: boolean) => Promise<unknown>
   setStreaming: (active: boolean) => Promise<unknown>
-  fetchPreview: (sceneName: string, width?: number) => Promise<Blob>
+  fetchPreview: (sceneName: string, width?: number, quality?: number) => Promise<Blob>
 }

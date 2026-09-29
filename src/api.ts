@@ -46,8 +46,8 @@ export class OBSControlAPI {
     const query = new URLSearchParams({sceneName})
     return (await this.request<{sources: Source[]}>(`/obs/sources?${query}`)).sources
   }
-  preview(sceneName: string, width = 960) {
-    const query = new URLSearchParams({sceneName, width: String(width)})
+  preview(sceneName: string, width = 640, quality = 50) {
+    const query = new URLSearchParams({sceneName, width: String(width), quality: String(quality)})
     return this.requestBlob(`/obs/preview?${query}`)
   }
   setScene(sceneName: string) { return this.post('/obs/scene', {sceneName}) }

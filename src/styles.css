@@ -21,6 +21,11 @@ body { min-height: 100vh; background: var(--bg); }
 button, input { font: inherit; }
 button { color: inherit; }
 
+.route-placeholder { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 12px; padding: 24px; text-align: center; }
+.route-placeholder h1, .route-placeholder p { margin: 0; }
+.route-placeholder p { color: var(--muted); }
+.route-placeholder a { padding: 10px 14px; border-radius: 3px; background: var(--blue); color: #fff; text-decoration: none; }
+
 .topbar { position: sticky; top: 0; z-index: 10; height: 64px; padding: 0 max(22px, calc((100vw - 1320px) / 2)); display: flex; align-items: center; justify-content: space-between; background: var(--header); border-bottom: 1px solid var(--border); }
 .identity, .connect-brand { display: flex; align-items: center; gap: 11px; }
 .identity > div { display: flex; flex-direction: column; gap: 2px; }

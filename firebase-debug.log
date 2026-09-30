@@ -1,0 +1,20 @@
+[debug] [2026-09-30T22:45:59.292Z] ----------------------------------------------------------------------
+[debug] [2026-09-30T22:45:59.293Z] Command:       /Users/adailson/.nvm/versions/node/v24.19.0/bin/node /Users/adailson/.nvm/versions/node/v24.19.0/bin/firebase init
+[debug] [2026-09-30T22:45:59.293Z] CLI Version:   15.32.0
+[debug] [2026-09-30T22:45:59.293Z] Platform:      darwin
+[debug] [2026-09-30T22:45:59.293Z] Node Version:  v24.19.0
+[debug] [2026-09-30T22:45:59.293Z] Detected Agent: unknown
+[debug] [2026-09-30T22:45:59.293Z] Time:          Wed Sep 30 2026 19:45:59 GMT-0300 (Brasilia Standard Time)
+[debug] [2026-09-30T22:45:59.293Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/adailson/dev/obs_control/obs_control_web
+

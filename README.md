@@ -135,7 +135,26 @@ O endpoint `POST /checkout-sessions` deve receber `planId`, `successUrl` e `canc
 {"checkoutUrl": "https://checkout.do-provedor.example/sessao"}
 ```
 
-Chaves privadas, preços confiáveis e webhooks devem permanecer exclusivamente no backend. Sem a variável configurada, a landing exibe um link de interesse por e-mail no lugar do checkout.
+Chaves privadas, IDs de preço confiáveis e webhooks devem permanecer exclusivamente no backend. Sem a variável configurada, os botões de checkout permanecem desabilitados.
+
+Os planos exibidos ficam centralizados em `src/billing.ts`: `ptz-monthly` por R$ 20/mês e `ptz-yearly` por R$ 200/ano. O backend deve mapear esses IDs para os respectivos Price IDs da Stripe; nunca aceite um valor monetário enviado pelo navegador.
+
+### Firebase Auth e proteção do PTZ
+
+Ative o provedor E-mail/Senha no Firebase Authentication e configure as variáveis `VITE_FIREBASE_*` descritas em `.env.example`. O cliente envia o Firebase ID token como `Authorization: Bearer <token>` ao backend de cobrança.
+
+Além de `POST /checkout-sessions`, o backend deve implementar:
+
+```text
+GET /entitlements/ptz
+Authorization: Bearer <Firebase ID token>
+
+200 {"active": true, "planId": "ptz-monthly", "currentPeriodEnd": "2026-10-30T00:00:00Z"}
+```
+
+O backend deve validar o token com Firebase Admin e consultar a assinatura atualizada pelo webhook da Stripe. `active` só pode ser verdadeiro para uma assinatura em estado aceito pela regra comercial. A checagem no React melhora a experiência e protege a navegação, mas a API que envia comandos PTZ também deve exigir o mesmo token e entitlement; uma rota SPA nunca é uma fronteira de segurança suficiente.
+
+O webhook deve associar `customer`/`subscription` ao `uid` do Firebase usando metadados criados no checkout e persistir apenas identificadores e estado da assinatura. Não armazene dados de cartão.
 
 ## Testes
 

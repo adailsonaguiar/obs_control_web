@@ -163,10 +163,9 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   })
 
   return <div className="ptz-desk">
-    <header className="ptz-desk-bar">
-      <a className="ptz-brand" href="/" aria-label="Voltar para ferramentas"><span className="ptz-brand-mark" />PTZ CONTROL DESK</a>
-      <span className="ptz-chip">{camera?.name || 'Nenhuma câmera'}</span><div className="ptz-bar-spacer" /><span className="ptz-chip">Vel {speed}</span>
-      <button className="ptz-quiet-button" onClick={() => setSettingsOpen(true)}><Icon name="settings" /> Servidor</button>
+    <header className="topbar ptz-shared-header">
+      <div className="identity"><a className="logo" href="/" aria-label="Voltar para ferramentas"><img src="/logo.png" alt="" /></a><div><strong>OBS Remote Deck</strong><small>{server.host}:{server.port}</small></div></div>
+      <div className="connection"><span className="signal" />{camera?.name || 'Nenhuma câmera'}<button onClick={() => setSettingsOpen(true)}>Trocar servidor</button></div>
     </header>
     <nav className="ptz-mobile-tabs" aria-label="Painéis PTZ">{([['cameras', 'Câmeras'], ['control', 'Controle'], ['presets', 'Presets']] as const).map(([panel, label]) => <button key={panel} className={mobilePanel === panel ? 'active' : ''} onClick={() => setMobilePanel(panel)}>{label}</button>)}</nav>
     {notice && <div className={`ptz-notice ${notice.kind}`}>{notice.text}<button aria-label="Fechar aviso" onClick={() => setNotice(null)}>×</button></div>}

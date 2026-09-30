@@ -1,4 +1,4 @@
-import {PointerEvent, useMemo, useRef, useState} from 'react'
+import {PointerEvent, useEffect, useMemo, useRef, useState} from 'react'
 import {ConnectionSettings, OBSControlAPI} from '../api'
 
 type Notice = {kind: 'success' | 'error'; text: string}
@@ -8,6 +8,8 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   const [cameraHost, setCameraHost] = useState('192.168.1.100')
   const [cameraPort, setCameraPort] = useState(52381)
   const [speed, setSpeed] = useState(8)
+  const [sensitivity, setSensitivity] = useState(100)
+  const [smoothness, setSmoothness] = useState(65)
   const [notice, setNotice] = useState<Notice | null>(null)
   const client = useMemo(() => new OBSControlAPI(server), [server])
 
@@ -45,11 +47,11 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
         <label>Token da API<input type="password" value={server.token} onChange={event => setServer({...server, token: event.target.value})} /></label>
         <label>IP da câmera<input value={cameraHost} inputMode="decimal" onChange={event => setCameraHost(event.target.value)} /></label>
         <label>Porta VISCA UDP<input type="number" min="1" max="65535" value={cameraPort} onChange={event => setCameraPort(Number(event.target.value))} /></label>
-        <label>Velocidade ({speed})<input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label>
+        <label>{mode === 'arrows' ? 'Velocidade' : 'Velocidade máxima'} ({speed})<input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label>
       </div></section>
       <section className="ptz-control-grid">
         {mode === 'arrows' && <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Controle por setas</h2><p>Movimentos precisos em oito direções.</p></div></div><PTZDirectionPad hold={direction => hold('move', direction)} /></article>}
-        {mode === 'joystick' && <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Joystick virtual</h2><p>Arraste para controlar direção e intensidade.</p></div></div><div className="web-joystick-wrap"><PTZJoystick onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>}
+        {mode === 'joystick' && <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Joystick virtual</h2><p>Arraste para controlar direção e intensidade.</p></div></div><div className="joystick-tuning"><label>Sensibilidade ({sensitivity}%)<input type="range" min="50" max="150" value={sensitivity} onChange={event => setSensitivity(Number(event.target.value))} /></label><label>Suavidade ({smoothness}%)<input type="range" min="0" max="100" value={smoothness} onChange={event => setSmoothness(Number(event.target.value))} /></label></div><div className="web-joystick-wrap"><PTZJoystick maxSpeed={speed} sensitivity={sensitivity} smoothness={smoothness} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>}
         <article className="panel ptz-control-card ptz-zoom-card"><div className="panel-heading"><div><h2>Zoom</h2><p>Aproxime ou afaste enquanto pressiona.</p></div></div><div className="web-ptz-zoom"><button {...hold('zoom', 'in')}>＋ Aproximar</button><button {...hold('zoom', 'out')}>− Afastar</button></div></article>
       </section>
       <p className="ptz-help">Segure para mover ou aplicar zoom e solte para parar. A câmera deve estar na mesma rede, com VISCA over IP habilitado. A porta padrão é 52381/UDP.</p>
@@ -81,39 +83,55 @@ type HoldHandlers = {
   onPointerCancel: () => void
 }
 
-function PTZJoystick({onMove, onStop}: {onMove: (direction: string, speed: number) => void; onStop: () => void}) {
+function PTZJoystick({maxSpeed, sensitivity, smoothness, onMove, onStop}: {maxSpeed: number; sensitivity: number; smoothness: number; onMove: (direction: string, speed: number) => void; onStop: () => void}) {
   const field = useRef<HTMLDivElement>(null)
   const lastCommand = useRef({direction: '', speed: 0, time: 0})
+  const target = useRef({x: 0, y: 0})
+  const current = useRef({x: 0, y: 0})
+  const radius = useRef(1)
+  const animation = useRef<number | null>(null)
   const [position, setPosition] = useState({x: 0, y: 0})
   const [dragging, setDragging] = useState(false)
+
+  useEffect(() => () => { if (animation.current !== null) cancelAnimationFrame(animation.current) }, [])
+
+  function animate() {
+    const alpha = .36 - smoothness * .0025
+    current.current.x += (target.current.x - current.current.x) * alpha
+    current.current.y += (target.current.y - current.current.y) * alpha
+    setPosition({x: current.current.x * radius.current, y: current.current.y * radius.current})
+
+    const strength = Math.min(1, Math.hypot(current.current.x, current.current.y))
+    const deadZone = .16 - (sensitivity - 50) * .0008
+    const travel = Math.max(0, (strength - deadZone) / (1 - deadZone))
+    if (travel === 0) {
+      if (lastCommand.current.direction) { lastCommand.current = {direction: '', speed: 0, time: 0}; onStop() }
+    } else {
+      const responseCurve = 1.9 - (sensitivity - 50) * .008
+      const nextSpeed = Math.max(1, Math.round(1 + Math.pow(travel, responseCurve) * (maxSpeed - 1)))
+      const direction = joystickDirection(current.current.x, current.current.y)
+      const now = performance.now()
+      if (direction !== lastCommand.current.direction || (nextSpeed !== lastCommand.current.speed && now - lastCommand.current.time >= 70)) {
+        lastCommand.current = {direction, speed: nextSpeed, time: now}
+        onMove(direction, nextSpeed)
+      }
+    }
+    animation.current = requestAnimationFrame(animate)
+  }
 
   function update(event: PointerEvent<HTMLDivElement>) {
     if (!field.current) return
     const bounds = field.current.getBoundingClientRect()
-    const radius = Math.max(1, Math.min(bounds.width, bounds.height) / 2 - 25)
+    radius.current = Math.max(1, Math.min(bounds.width, bounds.height) / 2 - 25)
     const rawX = event.clientX - bounds.left - bounds.width / 2
     const rawY = event.clientY - bounds.top - bounds.height / 2
     const distance = Math.hypot(rawX, rawY)
-    const scale = distance > radius ? radius / distance : 1
-    const x = rawX * scale
-    const y = rawY * scale
-    setPosition({x, y})
-    const strength = Math.min(1, Math.hypot(x, y) / radius)
-    if (strength < .12) {
-      if (lastCommand.current.direction) { lastCommand.current = {direction: '', speed: 0, time: 0}; onStop() }
-      return
-    }
-    const direction = joystickDirection(x, y)
-    const nextSpeed = Math.max(1, Math.round(strength * 24))
-    const now = Date.now()
-    if (direction !== lastCommand.current.direction || Math.abs(nextSpeed - lastCommand.current.speed) >= 2 || now - lastCommand.current.time >= 100) {
-      lastCommand.current = {direction, speed: nextSpeed, time: now}
-      onMove(direction, nextSpeed)
-    }
+    const scale = distance > radius.current ? radius.current / distance : 1
+    target.current = {x: rawX * scale / radius.current, y: rawY * scale / radius.current}
   }
 
-  function release() { setDragging(false); setPosition({x: 0, y: 0}); lastCommand.current = {direction: '', speed: 0, time: 0}; onStop() }
-  return <div ref={field} className={`web-joystick ${dragging ? 'dragging' : ''}`} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDragging(true); update(event) }} onPointerMove={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) update(event) }} onPointerUp={release} onPointerCancel={release}>
+  function release() { if (animation.current !== null) cancelAnimationFrame(animation.current); animation.current = null; target.current = {x: 0, y: 0}; current.current = {x: 0, y: 0}; setDragging(false); setPosition({x: 0, y: 0}); lastCommand.current = {direction: '', speed: 0, time: 0}; onStop() }
+  return <div ref={field} className={`web-joystick ${dragging ? 'dragging' : ''}`} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDragging(true); update(event); if (animation.current === null) animation.current = requestAnimationFrame(animate) }} onPointerMove={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) update(event) }} onPointerUp={release} onPointerCancel={release}>
     <span className="joystick-axis horizontal" /><span className="joystick-axis vertical" /><span className="joystick-knob" style={{transform: `translate(${position.x}px, ${position.y}px)`}} />
   </div>
 }

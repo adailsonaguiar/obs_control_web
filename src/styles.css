@@ -93,6 +93,9 @@ button { color: inherit; }
 .web-ptz-pad button.stop { color: #9fc5e3; font-size: 13px; }
 .web-ptz-pad button:active, .web-ptz-zoom button:active { border-color: var(--blue); background: #334b5e; }
 .web-joystick-wrap { min-height: 222px; display: grid; place-items: center; padding: 18px; }
+.joystick-tuning { padding: 16px 20px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.joystick-tuning label { display: grid; gap: 7px; color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .05em; }
+.joystick-tuning input { width: 100%; accent-color: var(--blue); }
 .web-joystick { position: relative; width: 210px; height: 210px; overflow: hidden; border: 1px solid #59646b; border-radius: 50%; background: radial-gradient(circle, #36434b 0 12%, #292f33 13% 48%, #222629 49%); cursor: grab; touch-action: none; user-select: none; }
 .web-joystick.dragging { cursor: grabbing; border-color: var(--blue); }
 .joystick-axis { position: absolute; left: 50%; top: 50%; background: rgb(255 255 255 / 9%); pointer-events: none; }.joystick-axis.horizontal { width: 80%; height: 1px; transform: translate(-50%, -50%); }.joystick-axis.vertical { width: 1px; height: 80%; transform: translate(-50%, -50%); }
@@ -102,7 +105,7 @@ button { color: inherit; }
 .web-ptz-zoom { min-height: 112px; padding: 24px; display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 12px; }
 .web-ptz-zoom button { font-size: 12px; font-weight: 700; }
 .ptz-help { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
-@media (max-width: 650px) { .ptz-topbar { grid-template-columns: 1fr auto; }.ptz-topbar > span { display: none; }.ptz-form, .ptz-control-grid, .web-ptz-zoom { grid-template-columns: 1fr; }.ptz-form label { min-width: 0; }.ptz-zoom-card { grid-column: auto; } }
+@media (max-width: 650px) { .ptz-topbar { grid-template-columns: 1fr auto; }.ptz-topbar > span { display: none; }.ptz-form, .ptz-control-grid, .web-ptz-zoom, .joystick-tuning { grid-template-columns: 1fr; }.ptz-form label { min-width: 0; }.ptz-zoom-card { grid-column: auto; } }
 
 .topbar { position: sticky; top: 0; z-index: 10; height: 64px; padding: 0 max(22px, calc((100vw - 1320px) / 2)); display: flex; align-items: center; justify-content: space-between; background: var(--header); border-bottom: 1px solid var(--border); }
 .identity, .connect-brand { display: flex; align-items: center; gap: 11px; }

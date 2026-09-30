@@ -75,11 +75,15 @@ button { color: inherit; }
 .ptz-topbar strong { font-size: 14px; }
 .ptz-topbar > span { justify-self: end; color: var(--muted); font-size: 9px; }
 .ptz-container { width: min(100% - 40px, 960px); margin: 0 auto; padding: 30px 0 50px; }
+.ptz-mode-nav { margin: 18px 0 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ptz-mode-nav a { padding: 11px 16px; border: 1px solid var(--border); border-radius: 4px; background: var(--panel); color: var(--muted); font-size: 10px; font-weight: 700; text-align: center; text-decoration: none; }
+.ptz-mode-nav a:hover { border-color: #687986; color: #fff; }
+.ptz-mode-nav a.active { border-color: #4e91c2; background: #263e50; color: #d9edfb; }
 .ptz-form { padding: 16px; display: grid; grid-template-columns: 1fr 160px 1fr; gap: 14px; }
 .ptz-form label { display: grid; gap: 7px; color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
 .ptz-form input:not([type="range"]) { min-width: 0; padding: 10px; border: 1px solid #555; border-radius: 3px; background: #202020; color: #eee; }
 .ptz-form input[type="range"] { accent-color: var(--blue); }
-.ptz-control-grid { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+.ptz-control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
 .ptz-control-card { display: flex; min-width: 0; flex-direction: column; }
 .ptz-control-card .panel-heading { min-height: 70px; }
 .ptz-control-card .panel-heading p { margin: 5px 0 0; color: var(--muted); font-size: 9px; font-weight: 400; }

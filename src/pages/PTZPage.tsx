@@ -3,7 +3,7 @@ import {ConnectionSettings, OBSControlAPI} from '../api'
 
 type Notice = {kind: 'success' | 'error'; text: string}
 
-export function PTZPage() {
+export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   const [server, setServer] = useState<ConnectionSettings>({host: '127.0.0.1', port: 3456, token: ''})
   const [cameraHost, setCameraHost] = useState('192.168.1.100')
   const [cameraPort, setCameraPort] = useState(52381)
@@ -31,9 +31,13 @@ export function PTZPage() {
   }
 
   return <div className="ptz-page">
-    <header className="ptz-topbar"><a href="/">← Ferramentas</a><strong>Controle PTZ</strong><span>VISCA over IP</span></header>
+    <header className="ptz-topbar"><a href="/">← Ferramentas</a><strong>{mode === 'arrows' ? 'PTZ por setas' : 'Joystick PTZ'}</strong><span>VISCA over IP</span></header>
     <main className="ptz-container">
       <div className="page-heading"><div><p>CONTROLE DE CÂMERA</p><h1>PTZ via rede local</h1></div><span className="obs-state online"><span /> UDP</span></div>
+      <nav className="ptz-mode-nav" aria-label="Modo de controle PTZ">
+        <a className={mode === 'arrows' ? 'active' : ''} href="/ptz/setas">Setas</a>
+        <a className={mode === 'joystick' ? 'active' : ''} href="/ptz/joystick">Joystick virtual</a>
+      </nav>
       {notice && <div className={`notice ${notice.kind}`}>{notice.text}<button onClick={() => setNotice(null)}>×</button></div>}
       <section className="panel ptz-config"><div className="panel-heading"><h2>Conexão</h2></div><div className="ptz-form">
         <label>IP do servidor<input value={server.host} onChange={event => setServer({...server, host: event.target.value})} /></label>
@@ -44,8 +48,8 @@ export function PTZPage() {
         <label>Velocidade ({speed})<input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label>
       </div></section>
       <section className="ptz-control-grid">
-        <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Controle por setas</h2><p>Movimentos precisos em oito direções.</p></div></div><PTZDirectionPad hold={direction => hold('move', direction)} /></article>
-        <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Joystick virtual</h2><p>Arraste para controlar direção e intensidade.</p></div></div><div className="web-joystick-wrap"><PTZJoystick onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>
+        {mode === 'arrows' && <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Controle por setas</h2><p>Movimentos precisos em oito direções.</p></div></div><PTZDirectionPad hold={direction => hold('move', direction)} /></article>}
+        {mode === 'joystick' && <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Joystick virtual</h2><p>Arraste para controlar direção e intensidade.</p></div></div><div className="web-joystick-wrap"><PTZJoystick onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>}
         <article className="panel ptz-control-card ptz-zoom-card"><div className="panel-heading"><div><h2>Zoom</h2><p>Aproxime ou afaste enquanto pressiona.</p></div></div><div className="web-ptz-zoom"><button {...hold('zoom', 'in')}>＋ Aproximar</button><button {...hold('zoom', 'out')}>− Afastar</button></div></article>
       </section>
       <p className="ptz-help">Segure para mover ou aplicar zoom e solte para parar. A câmera deve estar na mesma rede, com VISCA over IP habilitado. A porta padrão é 52381/UDP.</p>

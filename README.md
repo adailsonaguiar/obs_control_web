@@ -8,15 +8,37 @@ O documento [Plano de novas funcionalidades](docs/PLANO_NOVAS_FUNCIONALIDADES.md
 
 ## Visão do produto
 
-A aplicação deve oferecer uma experiência de controle de câmeras PTZ completa e acessível, reduzindo ou eliminando a necessidade de adquirir um controle físico dedicado, como o **NEOiD PTZ Controller IP PRO**, o **NEOiD PTZ Controller MINI** ou o **NEOiD ESTUDIO 4+ GEN 2**.
+A aplicação deve oferecer uma experiência simples, completa e acessível para controle de câmeras PTZ pelo navegador. A proposta é reunir em uma interface web, construída com HTML, CSS e JavaScript, os principais recursos encontrados em controles físicos dedicados, reduzindo ou eliminando a necessidade de adquirir equipamentos como:
+
+- **NEOiD PTZ Controller IP PRO**.
+- **NEOiD PTZ Controller MINI**.
+- **NEOiD ESTUDIO 4+ GEN 2**.
 
 Para alcançar esse objetivo, o produto deve incluir:
 
-- Controle de múltiplas câmeras em uma única interface.
-- Cadastro e salvamento persistente dos dados dos dispositivos.
-- Criação, edição e acionamento de presets individuais para cada câmera.
+- Cadastro e controle de múltiplas câmeras em uma única interface.
+- Salvamento persistente dos dados e das configurações de cada dispositivo.
+- Seleção rápida da câmera ativa sem interromper a operação.
+- Criação, edição, identificação e acionamento de presets individuais para cada câmera.
+- Controle de movimento por setas direcionais para cima, baixo, esquerda e direita.
+- Botões dedicados para aproximar (**zoom in**), afastar (**zoom out**) e interromper o movimento.
+- Joystick virtual em formato de mira, acionado ao clicar ou tocar e arrastar, com direção e intensidade definidas pela posição do ponteiro.
+- Controles compatíveis com mouse e tela sensível ao toque.
+- Retorno visual claro sobre a câmera selecionada, o comando em execução e o estado da conexão.
 - Experiência de uso adequada para computador, tablet e celular, com acesso rápido aos principais comandos durante uma produção.
 - Definição e validação do modelo comercial: pagamento único, assinatura recorrente ou uma combinação dos dois formatos.
+
+### Direção visual e experiência de uso
+
+O visual deve ser inspirado no OBS Studio: interface escura, painéis bem definidos, informações organizadas e controles operacionais fáceis de localizar. A semelhança deve estar na linguagem visual e na eficiência de uso, sem copiar marcas ou elementos proprietários.
+
+A distribuição da interface deve aproveitar bem o espaço disponível e se adaptar ao dispositivo:
+
+- No desktop, câmeras, presets e controles PTZ podem permanecer visíveis lado a lado.
+- No tablet, os controles devem continuar acessíveis sem exigir precisão excessiva nos toques.
+- No celular, os painéis devem ser reorganizados verticalmente, priorizando a câmera ativa, o joystick, as setas, o zoom e os presets.
+- Botões e áreas de toque devem ter tamanho confortável e estados visuais claros para uso durante transmissões ao vivo.
+- As funções essenciais devem exigir o menor número possível de cliques ou toques.
 
 ## Recursos
 

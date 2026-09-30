@@ -6,6 +6,13 @@ type Preset = {id: string; name: string; number: number}
 type Camera = {id: string; name: string; host: string; port: number; snapshotUrl: string; presets: Preset[]}
 type MobilePanel = 'cameras' | 'control' | 'presets'
 type ControlMode = 'arrows' | 'joystick' | 'both'
+type AxisLock = 'free' | 'horizontal' | 'vertical'
+
+export function constrainJoystickVector(x: number, y: number, axisLock: AxisLock) {
+  if (axisLock === 'horizontal') return {x, y: 0}
+  if (axisLock === 'vertical') return {x: 0, y}
+  return {x, y}
+}
 
 const CAMERAS_KEY = 'obs-control.ptz-cameras.v1'
 const SERVER_KEY = 'obs-control.ptz-server.v1'
@@ -19,12 +26,13 @@ function readControlMode(fallback: Exclude<ControlMode, 'both'>): ControlMode {
 
 function readJoystickTuning() {
   try {
-    const saved = JSON.parse(localStorage.getItem(JOYSTICK_TUNING_KEY) || '{}') as {speed?: number; sensitivity?: number}
+    const saved = JSON.parse(localStorage.getItem(JOYSTICK_TUNING_KEY) || '{}') as {speed?: number; sensitivity?: number; axisLock?: AxisLock}
     return {
       speed: saved.speed && saved.speed >= 1 && saved.speed <= 24 ? saved.speed : 8,
       sensitivity: saved.sensitivity && saved.sensitivity >= 50 && saved.sensitivity <= 150 ? saved.sensitivity : 100,
+      axisLock: saved.axisLock === 'horizontal' || saved.axisLock === 'vertical' ? saved.axisLock : 'free' as AxisLock,
     }
-  } catch { return {speed: 8, sensitivity: 100} }
+  } catch { return {speed: 8, sensitivity: 100, axisLock: 'free' as AxisLock} }
 }
 
 function readCameras(): Camera[] {
@@ -51,6 +59,7 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   const [selectedId, setSelectedId] = useState(initialCameras[0]?.id || '')
   const [speed, setSpeed] = useState(initialTuning.speed)
   const [sensitivity, setSensitivity] = useState(initialTuning.sensitivity)
+  const [axisLock, setAxisLock] = useState<AxisLock>(initialTuning.axisLock)
   const [controlMode, setControlMode] = useState<ControlMode>(() => readControlMode(mode))
   const [notice, setNotice] = useState<Notice | null>(null)
   const [logs, setLogs] = useState<string[]>(['Console pronta. Cadastre ou selecione uma câmera.'])
@@ -63,7 +72,7 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
 
   useEffect(() => localStorage.setItem(CAMERAS_KEY, JSON.stringify(cameras)), [cameras])
   useEffect(() => localStorage.setItem(CONTROL_MODE_KEY, controlMode), [controlMode])
-  useEffect(() => localStorage.setItem(JOYSTICK_TUNING_KEY, JSON.stringify({speed, sensitivity})), [speed, sensitivity])
+  useEffect(() => localStorage.setItem(JOYSTICK_TUNING_KEY, JSON.stringify({speed, sensitivity, axisLock})), [speed, sensitivity, axisLock])
   useEffect(() => {
     localStorage.setItem(SERVER_KEY, JSON.stringify({host: server.host, port: server.port}))
     sessionStorage.setItem(`${SERVER_KEY}.token`, server.token)
@@ -181,8 +190,8 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
         <div className="ptz-dock ptz-control-dock"><DockTitle title="Controle PTZ"><div className="ptz-control-switch" role="group" aria-label="Tipo de controle exibido">{([['arrows', 'Setas'], ['joystick', 'Joystick'], ['both', 'Ambos']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={controlMode === value} className={controlMode === value ? 'active' : ''} onClick={() => setControlMode(value)}>{label}</button>)}</div><span className="ptz-protocol"><i /> VISCA over IP</span></DockTitle>
           <div className={`ptz-control-body mode-${controlMode}`}>{controlMode !== 'joystick' && <div className="ptz-control-column arrows"><p className="ptz-label">Setas direcionais</p><PTZDirectionPad hold={direction => hold('move', direction)} />
             <div className="ptz-button-row"><button {...hold('zoom', 'in')}><Icon name="zoomIn" /> Aproximar</button><button {...hold('zoom', 'out')}><Icon name="zoomOut" /> Afastar</button></div><button className="ptz-stop-button" onClick={() => void send('move', 'stop')}><Icon name="stop" /> Parar movimento</button></div>}
-            {controlMode !== 'arrows' && <div className="ptz-control-column joystick"><p className="ptz-label">Joystick / mira</p><div className="ptz-joystick-layout"><PTZJoystick maxSpeed={speed} sensitivity={sensitivity} smoothness={65} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} />
-              <div className="ptz-joystick-tuning"><label><span>Velocidade <strong>{speed}</strong></span><input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label><label><span>Sensibilidade <strong>{sensitivity}%</strong></span><input type="range" min="50" max="150" value={sensitivity} onChange={event => setSensitivity(Number(event.target.value))} /></label></div></div></div>}</div>
+            {controlMode !== 'arrows' && <div className="ptz-control-column joystick"><p className="ptz-label">Joystick / mira</p><div className="ptz-joystick-layout"><PTZJoystick maxSpeed={speed} sensitivity={sensitivity} smoothness={65} axisLock={axisLock} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} />
+              <div className="ptz-joystick-tuning"><label><span>Velocidade <strong>{speed}</strong></span><input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label><label><span>Sensibilidade <strong>{sensitivity}%</strong></span><input type="range" min="50" max="150" value={sensitivity} onChange={event => setSensitivity(Number(event.target.value))} /></label><div className="ptz-axis-control"><span>Travar movimento</span><div role="group" aria-label="Restrição de eixo do joystick">{([['free', 'Livre'], ['horizontal', 'Horizontal'], ['vertical', 'Vertical']] as const).map(([value, label]) => <button key={value} type="button" className={axisLock === value ? 'active' : ''} aria-pressed={axisLock === value} onClick={() => setAxisLock(value)}>{label}</button>)}</div></div></div></div></div>}</div>
         </div>
       </section>
 
@@ -213,7 +222,7 @@ const directions = [['up-left', -45, 'Mover para cima e esquerda'], ['up', 0, 'M
 function PTZDirectionPad({hold}: {hold: (direction: string) => HoldHandlers}) { return <div className="ptz-pad" aria-label="Controle direcional">{directions.map(([direction, rotation, name]) => <button key={direction} type="button" className={direction === 'stop' ? 'stop' : ''} aria-label={name} title={name} {...hold(direction)}>{direction === 'stop' ? <Icon name="stop" /> : <Icon name="arrow" rotation={rotation} />}</button>)}</div> }
 type HoldHandlers = {onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void; onPointerUp: () => void; onPointerCancel: () => void}
 
-function PTZJoystick({maxSpeed, sensitivity, smoothness, onMove, onStop}: {maxSpeed: number; sensitivity: number; smoothness: number; onMove: (direction: string, speed: number) => void; onStop: () => void}) {
+function PTZJoystick({maxSpeed, sensitivity, smoothness, axisLock, onMove, onStop}: {maxSpeed: number; sensitivity: number; smoothness: number; axisLock: AxisLock; onMove: (direction: string, speed: number) => void; onStop: () => void}) {
   const field = useRef<HTMLDivElement>(null), lastCommand = useRef({direction: '', speed: 0, time: 0}), target = useRef({x: 0, y: 0}), current = useRef({x: 0, y: 0}), radius = useRef(1), animation = useRef<number | null>(null)
   const [position, setPosition] = useState({x: 0, y: 0}), [dragging, setDragging] = useState(false)
   useEffect(() => () => { if (animation.current !== null) cancelAnimationFrame(animation.current) }, [])
@@ -226,7 +235,7 @@ function PTZJoystick({maxSpeed, sensitivity, smoothness, onMove, onStop}: {maxSp
     else { const nextSpeed = Math.max(1, Math.round(1 + Math.pow(travel, 1.9 - (sensitivity - 50) * .008) * (maxSpeed - 1))), direction = joystickDirection(current.current.x, current.current.y), now = performance.now(); if (direction !== lastCommand.current.direction || (nextSpeed !== lastCommand.current.speed && now - lastCommand.current.time >= 70)) { lastCommand.current = {direction, speed: nextSpeed, time: now}; onMove(direction, nextSpeed) } }
     animation.current = requestAnimationFrame(animate)
   }
-  function update(event: PointerEvent<HTMLDivElement>) { if (!field.current) return; const bounds = field.current.getBoundingClientRect(); radius.current = Math.max(1, Math.min(bounds.width, bounds.height) / 2 - 25); const rawX = event.clientX - bounds.left - bounds.width / 2, rawY = event.clientY - bounds.top - bounds.height / 2, distance = Math.hypot(rawX, rawY), scale = distance > radius.current ? radius.current / distance : 1; target.current = {x: rawX * scale / radius.current, y: rawY * scale / radius.current} }
+  function update(event: PointerEvent<HTMLDivElement>) { if (!field.current) return; const bounds = field.current.getBoundingClientRect(); radius.current = Math.max(1, Math.min(bounds.width, bounds.height) / 2 - 25); const constrained = constrainJoystickVector(event.clientX - bounds.left - bounds.width / 2, event.clientY - bounds.top - bounds.height / 2, axisLock), distance = Math.hypot(constrained.x, constrained.y), scale = distance > radius.current ? radius.current / distance : 1; target.current = {x: constrained.x * scale / radius.current, y: constrained.y * scale / radius.current} }
   function release() { if (animation.current !== null) cancelAnimationFrame(animation.current); animation.current = null; target.current = {x: 0, y: 0}; current.current = {x: 0, y: 0}; setDragging(false); setPosition({x: 0, y: 0}); lastCommand.current = {direction: '', speed: 0, time: 0}; onStop() }
   return <div ref={field} className={`ptz-joystick ${dragging ? 'dragging' : ''}`} onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setDragging(true); update(event); if (animation.current === null) animation.current = requestAnimationFrame(animate) }} onPointerMove={event => { if (event.currentTarget.hasPointerCapture(event.pointerId)) update(event) }} onPointerUp={release} onPointerCancel={release}><span className="axis horizontal" /><span className="axis vertical" /><span className="ring one" /><span className="ring two" /><span className="knob" style={{transform: `translate(${position.x}px, ${position.y}px)`}} /></div>
 }

@@ -12,21 +12,21 @@ function DashboardComponent({address, data, eventOnline, busy, notice, dismissNo
     void runAction(criticalAction, () => streaming ? setStreaming(false, commandId()) : setRecording(false, commandId()), streaming ? 'Transmissão encerrada e confirmada pelo OBS.' : 'Gravação encerrada e confirmada pelo OBS.')
     setCriticalAction(null)
   }
-  return <div className="app-shell">
+  return <div className="app-shell deck-shell">
     <header className="topbar">
       <div className="identity"><span className="logo"><img src="/logo.png" alt="" /></span><div><strong>OBS Remote Deck</strong><small>{address}</small></div></div>
       <div className="connection"><span className={eventOnline ? 'signal online' : 'signal'} />{eventOnline ? 'Tempo real' : 'Polling ativo'}<button onClick={disconnect}>Trocar servidor</button></div>
     </header>
-    <main className="dashboard">
-      <div className="page-heading"><div><p>CONTROLE REMOTO</p><h1>Painel do OBS</h1></div><div className={`obs-state ${status.connected ? 'online' : ''}`}><span />{status.connected ? 'OBS conectado' : 'OBS desconectado'}</div></div>
+    <main className="dashboard deck-dashboard">
       <nav className="deck-nav" aria-label="Seções do painel">{([['control', 'Controle'], ['health', 'Saúde'], ['audio', 'Áudio'], ['studio', 'Studio'], ['diagnostics', 'Diagnóstico']] as const).map(([id, label]) => <button key={id} className={tab === id ? 'active' : ''} onClick={() => setActiveSection(id)}>{label}</button>)}</nav>
-      {tab === 'control' && <><StatusStrip status={status} eventOnline={eventOnline} />
-      <OutputControls status={status} busy={busy} runAction={runAction} setRecording={setRecording} setStreaming={setStreaming} requestCritical={setCriticalAction} commandId={commandId} />
-      <div className="workspace">
-        <ProgramPreview sceneName={status.currentScene} connected={status.connected} fetchPreview={fetchPreview} />
+      {tab === 'control' && <div className="deck-console">
         <ScenesPanel scenes={scenes} currentScene={status.currentScene} busy={busy} runAction={runAction} setScene={setScene} />
+        <div className="deck-stage">
+          <ProgramPreview sceneName={status.currentScene} connected={status.connected} fetchPreview={fetchPreview} />
+          <section className="panel deck-command-dock"><div className="panel-heading"><h2>Saídas e estado</h2><span className={status.connected ? 'deck-connected' : ''}>{status.connected ? 'OBS conectado' : 'OBS desconectado'}</span></div><StatusStrip status={status} eventOnline={eventOnline} /><OutputControls status={status} busy={busy} runAction={runAction} setRecording={setRecording} setStreaming={setStreaming} requestCritical={setCriticalAction} commandId={commandId} /></section>
+        </div>
         <SourcesPanel sources={sources} busy={busy} runAction={runAction} setSourceVisible={setSourceVisible} />
-      </div></>}
+      </div>}
       {tab === 'health' && <HealthScreen telemetry={data.telemetry} />}
       {tab === 'audio' && <AudioScreen inputs={data.audio} busy={busy} runAction={runAction} setAudio={setAudio} commandId={commandId} />}
       {tab === 'studio' && <StudioScreen studio={data.studio} scenes={scenes} busy={busy} runAction={runAction} setPreviewScene={setPreviewScene} transition={transition} commandId={commandId} />}
@@ -123,8 +123,8 @@ const StatusStrip = memo(function StatusStrip({status, eventOnline}: {status: Da
 
 const OutputControls = memo(function OutputControls({status, busy, runAction, setRecording, setStreaming, requestCritical, commandId}: Pick<DashboardProps, 'busy' | 'runAction' | 'setRecording' | 'setStreaming'> & {status: DashboardProps['data']['status']; requestCritical: (value: 'recording' | 'streaming') => void; commandId: () => string}) {
   return <section className="output-controls">
-    <button className={status.recording ? 'stop active' : 'record'} disabled={!status.connected || !!busy} onClick={() => status.recording ? requestCritical('recording') : runAction('recording', () => setRecording(true, commandId()), 'Gravação iniciada e confirmada pelo OBS.')}><span>{status.recording ? '■' : '●'}</span><div><strong>{busy === 'recording' ? 'Enviando…' : status.recording ? 'Parar gravação' : 'Iniciar gravação'}</strong><small>{busy === 'recording' ? 'Aguardando confirmação' : 'Arquivo local do OBS'}</small></div></button>
-    <button className={status.streaming ? 'stop active' : 'stream'} disabled={!status.connected || !!busy} onClick={() => status.streaming ? requestCritical('streaming') : runAction('streaming', () => setStreaming(true, commandId()), 'Transmissão iniciada e confirmada pelo OBS.')}><span>{status.streaming ? '■' : '◉'}</span><div><strong>{busy === 'streaming' ? 'Enviando…' : status.streaming ? 'Parar transmissão' : 'Iniciar transmissão'}</strong><small>{busy === 'streaming' ? 'Aguardando confirmação' : 'Saída configurada no OBS'}</small></div></button>
+    <button className={status.recording ? 'stop active' : 'record'} disabled={!status.connected || !!busy} onClick={() => status.recording ? requestCritical('recording') : runAction('recording', () => setRecording(true, commandId()), 'Gravação iniciada e confirmada pelo OBS.')}><span><DeckIcon name={status.recording ? 'stop' : 'record'} /></span><div><strong>{busy === 'recording' ? 'Enviando…' : status.recording ? 'Parar gravação' : 'Iniciar gravação'}</strong><small>{busy === 'recording' ? 'Aguardando confirmação' : 'Arquivo local do OBS'}</small></div></button>
+    <button className={status.streaming ? 'stop active' : 'stream'} disabled={!status.connected || !!busy} onClick={() => status.streaming ? requestCritical('streaming') : runAction('streaming', () => setStreaming(true, commandId()), 'Transmissão iniciada e confirmada pelo OBS.')}><span><DeckIcon name={status.streaming ? 'stop' : 'broadcast'} /></span><div><strong>{busy === 'streaming' ? 'Enviando…' : status.streaming ? 'Parar transmissão' : 'Iniciar transmissão'}</strong><small>{busy === 'streaming' ? 'Aguardando confirmação' : 'Saída configurada no OBS'}</small></div></button>
   </section>
 })
 
@@ -133,7 +133,7 @@ const ScenesPanel = memo(function ScenesPanel({scenes, currentScene, busy, runAc
 })
 
 const SourcesPanel = memo(function SourcesPanel({sources, busy, runAction, setSourceVisible}: {sources: DashboardProps['data']['sources']} & Pick<DashboardProps, 'busy' | 'runAction' | 'setSourceVisible'>) {
-  return <section className="panel sources-panel"><PanelHeading title="Fontes da cena" count={sources.length} /><div className="source-list">{sources.map(source => <div className="source" key={`${source.sceneName}:${source.id}`}><button className={source.enabled ? 'eye visible' : 'eye'} disabled={!!busy} aria-label={source.enabled ? 'Ocultar fonte' : 'Mostrar fonte'} onClick={() => runAction('source', () => setSourceVisible(source.sceneName, source.name, !source.enabled), `Fonte “${source.name}” ${source.enabled ? 'ocultada' : 'exibida'}.`)}>{source.enabled ? '●' : '○'}</button><strong>{source.name}</strong><span>{source.enabled ? 'Visível' : 'Oculta'}</span></div>)}{!sources.length && <Empty text="Nenhuma fonte na cena atual" />}</div></section>
+  return <section className="panel sources-panel"><PanelHeading title="Fontes da cena" count={sources.length} /><div className="source-list">{sources.map(source => <div className="source" key={`${source.sceneName}:${source.id}`}><button className={source.enabled ? 'eye visible' : 'eye'} disabled={!!busy} aria-label={source.enabled ? 'Ocultar fonte' : 'Mostrar fonte'} onClick={() => runAction('source', () => setSourceVisible(source.sceneName, source.name, !source.enabled), `Fonte “${source.name}” ${source.enabled ? 'ocultada' : 'exibida'}.`)}><DeckIcon name={source.enabled ? 'eye' : 'eyeOff'} /></button><strong>{source.name}</strong><span>{source.enabled ? 'Visível' : 'Oculta'}</span></div>)}{!sources.length && <Empty text="Nenhuma fonte na cena atual" />}</div></section>
 })
 
 function HealthScreen({telemetry}: {telemetry: DashboardProps['data']['telemetry']}) {
@@ -162,7 +162,7 @@ function AudioRow({input, favorite, busy, onFavorite, runAction, setAudio, comma
   const [volume, setVolume] = useState(input.volumeDb)
   useEffect(() => setVolume(input.volumeDb), [input.volumeDb])
   const changeVolume = (value: number) => { setVolume(value); window.clearTimeout(timer.current); timer.current = window.setTimeout(() => void runAction(`audio:${input.name}`, () => setAudio(input.name, {volumeDb: value}, commandId()), `Volume de “${input.name}” confirmado.`), 250) }
-  return <article className="audio-row"><button className="favorite" onClick={onFavorite} aria-label="Alternar favorito">{favorite ? '★' : '☆'}</button><div><strong>{input.name}</strong><small>{input.kind || 'Entrada de áudio'} · {input.levelStatus}</small></div><div className={`audio-meter ${input.levelStatus.replace(' ', '-')}`}><span style={{width: `${Math.max(0, Math.min(100, (input.levelDb + 60) / 60 * 100))}%`}} /></div><label className="volume"><input type="range" min="-60" max="0" step="0.5" value={volume} disabled={!!busy} onChange={event => changeVolume(Number(event.target.value))} /><output>{volume.toFixed(1)} dB</output></label><button className={input.muted ? 'mute muted' : 'mute'} disabled={!!busy} onClick={() => void runAction(`audio:${input.name}`, () => setAudio(input.name, {muted: !input.muted}, commandId()), input.muted ? `“${input.name}” reativado.` : `“${input.name}” silenciado.`)}>{input.muted ? 'Reativar' : 'Silenciar'}</button></article>
+  return <article className="audio-row"><button className="favorite" onClick={onFavorite} aria-label="Alternar favorito"><DeckIcon name="star" filled={favorite} /></button><div><strong>{input.name}</strong><small>{input.kind || 'Entrada de áudio'} · {input.levelStatus}</small></div><div className={`audio-meter ${input.levelStatus.replace(' ', '-')}`}><span style={{width: `${Math.max(0, Math.min(100, (input.levelDb + 60) / 60 * 100))}%`}} /></div><label className="volume"><input type="range" min="-60" max="0" step="0.5" value={volume} disabled={!!busy} onChange={event => changeVolume(Number(event.target.value))} /><output>{volume.toFixed(1)} dB</output></label><button className={input.muted ? 'mute muted' : 'mute'} disabled={!!busy} onClick={() => void runAction(`audio:${input.name}`, () => setAudio(input.name, {muted: !input.muted}, commandId()), input.muted ? `“${input.name}” reativado.` : `“${input.name}” silenciado.`)}>{input.muted ? 'Reativar' : 'Silenciar'}</button></article>
 }
 
 function StudioScreen({studio, scenes, busy, runAction, setPreviewScene, transition, commandId}: {studio: DashboardProps['data']['studio']; scenes: DashboardProps['data']['scenes']; busy: string; runAction: DashboardProps['runAction']; setPreviewScene: DashboardProps['setPreviewScene']; transition: DashboardProps['transition']; commandId: () => string}) {
@@ -189,4 +189,14 @@ function duration(milliseconds: number) { const seconds = Math.floor(millisecond
 function Status({title, value, active, alert}: {title: string; value: string; active: boolean; alert?: boolean}) { return <article className={`status ${active ? 'active' : ''} ${alert ? 'alert' : ''}`}><span /><div><small>{title}</small><strong>{value}</strong></div></article> }
 function PanelHeading({title, count}: {title: string; count: number}) { return <div className="panel-heading"><h2>{title}</h2><span>{count}</span></div> }
 function Empty({text}: {text: string}) { return <div className="empty">{text}</div> }
+type DeckIconName = 'broadcast' | 'eye' | 'eyeOff' | 'record' | 'star' | 'stop'
+function DeckIcon({name, filled = false}: {name: DeckIconName; filled?: boolean}) {
+  const paths: Record<DeckIconName, React.ReactNode> = {
+    broadcast: <><circle cx="12" cy="12" r="2"/><path d="M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.5 5.5a9 9 0 0 0 0 13M18.5 5.5a9 9 0 0 1 0 13"/></>,
+    eye: <><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></>,
+    eyeOff: <><path d="m4 4 16 16M10.5 6.2A9.8 9.8 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.2 3M7.2 7.2C4.2 9 2.5 12 2.5 12S6 18 12 18a9 9 0 0 0 2.8-.4"/></>,
+    record: <circle cx="12" cy="12" r="6"/>, star: <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/>, stop: <rect x="7" y="7" width="10" height="10" rx="1"/>,
+  }
+  return <svg className="deck-icon" viewBox="0 0 24 24" aria-hidden="true" fill={filled ? 'currentColor' : 'none'}>{paths[name]}</svg>
+}
 export const Dashboard = memo(DashboardComponent)

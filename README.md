@@ -6,6 +6,18 @@ Portal de ferramentas para streaming. A landing page está disponível em `/`, o
 
 O documento [Plano de novas funcionalidades](docs/PLANO_NOVAS_FUNCIONALIDADES.md) descreve a evolução recomendada para operação segura fora da rede local, confiabilidade durante transmissões, monitoramento, áudio, permissões, macros e critérios de aceite.
 
+## Visão do produto
+
+A aplicação deve oferecer uma experiência de controle de câmeras PTZ completa e acessível, reduzindo ou eliminando a necessidade de adquirir um controle físico dedicado, como o **NEOiD PTZ Controller IP PRO**, o **NEOiD PTZ Controller MINI** ou o **NEOiD ESTUDIO 4+ GEN 2**.
+
+Para alcançar esse objetivo, o produto deve incluir:
+
+- Controle de múltiplas câmeras em uma única interface.
+- Cadastro e salvamento persistente dos dados dos dispositivos.
+- Criação, edição e acionamento de presets individuais para cada câmera.
+- Experiência de uso adequada para computador, tablet e celular, com acesso rápido aos principais comandos durante uma produção.
+- Definição e validação do modelo comercial: pagamento único, assinatura recorrente ou uma combinação dos dois formatos.
+
 ## Recursos
 
 - Configuração por IP, porta e token.

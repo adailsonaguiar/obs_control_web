@@ -44,12 +44,37 @@ export function PTZPage() {
         <label>Velocidade ({speed})<input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label>
       </div></section>
       <section className="ptz-control-grid">
-        <article className="panel"><div className="panel-heading"><h2>Movimento suave</h2></div><div className="web-joystick-wrap"><PTZJoystick onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>
-        <article className="panel"><div className="panel-heading"><h2>Zoom</h2></div><div className="web-ptz-zoom"><button {...hold('zoom', 'in')}>＋ Aproximar</button><button {...hold('zoom', 'out')}>− Afastar</button></div></article>
+        <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Controle por setas</h2><p>Movimentos precisos em oito direções.</p></div></div><PTZDirectionPad hold={direction => hold('move', direction)} /></article>
+        <article className="panel ptz-control-card"><div className="panel-heading"><div><h2>Joystick virtual</h2><p>Arraste para controlar direção e intensidade.</p></div></div><div className="web-joystick-wrap"><PTZJoystick onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} /></div></article>
+        <article className="panel ptz-control-card ptz-zoom-card"><div className="panel-heading"><div><h2>Zoom</h2><p>Aproxime ou afaste enquanto pressiona.</p></div></div><div className="web-ptz-zoom"><button {...hold('zoom', 'in')}>＋ Aproximar</button><button {...hold('zoom', 'out')}>− Afastar</button></div></article>
       </section>
       <p className="ptz-help">Segure para mover ou aplicar zoom e solte para parar. A câmera deve estar na mesma rede, com VISCA over IP habilitado. A porta padrão é 52381/UDP.</p>
     </main>
   </div>
+}
+
+const directions = [
+  {direction: 'up-left', label: '↖', name: 'Mover para cima e esquerda'},
+  {direction: 'up', label: '↑', name: 'Mover para cima'},
+  {direction: 'up-right', label: '↗', name: 'Mover para cima e direita'},
+  {direction: 'left', label: '←', name: 'Mover para esquerda'},
+  {direction: 'stop', label: '■', name: 'Parar movimento'},
+  {direction: 'right', label: '→', name: 'Mover para direita'},
+  {direction: 'down-left', label: '↙', name: 'Mover para baixo e esquerda'},
+  {direction: 'down', label: '↓', name: 'Mover para baixo'},
+  {direction: 'down-right', label: '↘', name: 'Mover para baixo e direita'},
+]
+
+function PTZDirectionPad({hold}: {hold: (direction: string) => HoldHandlers}) {
+  return <div className="web-ptz-pad" aria-label="Controle direcional">
+    {directions.map(({direction, label, name}) => <button key={direction} type="button" className={direction === 'stop' ? 'stop' : ''} aria-label={name} title={name} {...hold(direction)}>{label}</button>)}
+  </div>
+}
+
+type HoldHandlers = {
+  onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void
+  onPointerUp: () => void
+  onPointerCancel: () => void
 }
 
 function PTZJoystick({onMove, onStop}: {onMove: (direction: string, speed: number) => void; onStop: () => void}) {

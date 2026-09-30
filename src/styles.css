@@ -79,10 +79,14 @@ button { color: inherit; }
 .ptz-form label { display: grid; gap: 7px; color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; }
 .ptz-form input:not([type="range"]) { min-width: 0; padding: 10px; border: 1px solid #555; border-radius: 3px; background: #202020; color: #eee; }
 .ptz-form input[type="range"] { accent-color: var(--blue); }
-.ptz-control-grid { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.ptz-control-grid { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: stretch; }
+.ptz-control-card { display: flex; min-width: 0; flex-direction: column; }
+.ptz-control-card .panel-heading { min-height: 70px; }
+.ptz-control-card .panel-heading p { margin: 5px 0 0; color: var(--muted); font-size: 9px; font-weight: 400; }
 .web-ptz-pad { width: max-content; margin: 26px auto; display: grid; grid-template-columns: repeat(3, 64px); gap: 8px; }
 .web-ptz-pad button, .web-ptz-zoom button { min-height: 58px; border: 1px solid #595959; border-radius: 4px; background: var(--raised); color: #eee; cursor: pointer; touch-action: none; user-select: none; }
 .web-ptz-pad button { font-size: 22px; }
+.web-ptz-pad button.stop { color: #9fc5e3; font-size: 13px; }
 .web-ptz-pad button:active, .web-ptz-zoom button:active { border-color: var(--blue); background: #334b5e; }
 .web-joystick-wrap { min-height: 222px; display: grid; place-items: center; padding: 18px; }
 .web-joystick { position: relative; width: 210px; height: 210px; overflow: hidden; border: 1px solid #59646b; border-radius: 50%; background: radial-gradient(circle, #36434b 0 12%, #292f33 13% 48%, #222629 49%); cursor: grab; touch-action: none; user-select: none; }
@@ -90,10 +94,11 @@ button { color: inherit; }
 .joystick-axis { position: absolute; left: 50%; top: 50%; background: rgb(255 255 255 / 9%); pointer-events: none; }.joystick-axis.horizontal { width: 80%; height: 1px; transform: translate(-50%, -50%); }.joystick-axis.vertical { width: 1px; height: 80%; transform: translate(-50%, -50%); }
 .joystick-knob { position: absolute; left: calc(50% - 23px); top: calc(50% - 23px); width: 46px; height: 46px; border: 2px solid #9accee; border-radius: 50%; background: #3d89be; box-shadow: 0 5px 16px rgb(0 0 0 / 42%); transition: transform 90ms ease-out; pointer-events: none; }
 .web-joystick.dragging .joystick-knob { transition-duration: 55ms; }
-.web-ptz-zoom { min-height: 222px; padding: 26px; display: grid; align-content: center; gap: 12px; }
+.ptz-zoom-card { grid-column: 1 / -1; }
+.web-ptz-zoom { min-height: 112px; padding: 24px; display: grid; grid-template-columns: 1fr 1fr; align-content: center; gap: 12px; }
 .web-ptz-zoom button { font-size: 12px; font-weight: 700; }
 .ptz-help { margin: 14px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
-@media (max-width: 650px) { .ptz-topbar { grid-template-columns: 1fr auto; }.ptz-topbar > span { display: none; }.ptz-form, .ptz-control-grid { grid-template-columns: 1fr; }.ptz-form label { min-width: 0; } }
+@media (max-width: 650px) { .ptz-topbar { grid-template-columns: 1fr auto; }.ptz-topbar > span { display: none; }.ptz-form, .ptz-control-grid, .web-ptz-zoom { grid-template-columns: 1fr; }.ptz-form label { min-width: 0; }.ptz-zoom-card { grid-column: auto; } }
 
 .topbar { position: sticky; top: 0; z-index: 10; height: 64px; padding: 0 max(22px, calc((100vw - 1320px) / 2)); display: flex; align-items: center; justify-content: space-between; background: var(--header); border-bottom: 1px solid var(--border); }
 .identity, .connect-brand { display: flex; align-items: center; gap: 11px; }

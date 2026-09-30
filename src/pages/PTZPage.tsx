@@ -10,10 +10,21 @@ type ControlMode = 'arrows' | 'joystick' | 'both'
 const CAMERAS_KEY = 'obs-control.ptz-cameras.v1'
 const SERVER_KEY = 'obs-control.ptz-server.v1'
 const CONTROL_MODE_KEY = 'obs-control.ptz-control-mode.v1'
+const JOYSTICK_TUNING_KEY = 'obs-control.ptz-joystick-tuning.v1'
 
 function readControlMode(fallback: Exclude<ControlMode, 'both'>): ControlMode {
   const saved = localStorage.getItem(CONTROL_MODE_KEY)
   return saved === 'arrows' || saved === 'joystick' || saved === 'both' ? saved : fallback
+}
+
+function readJoystickTuning() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(JOYSTICK_TUNING_KEY) || '{}') as {speed?: number; sensitivity?: number}
+    return {
+      speed: saved.speed && saved.speed >= 1 && saved.speed <= 24 ? saved.speed : 8,
+      sensitivity: saved.sensitivity && saved.sensitivity >= 50 && saved.sensitivity <= 150 ? saved.sensitivity : 100,
+    }
+  } catch { return {speed: 8, sensitivity: 100} }
 }
 
 function readCameras(): Camera[] {
@@ -34,10 +45,12 @@ function makeId() { return `${Date.now().toString(36)}-${Math.random().toString(
 
 export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   const initialCameras = useMemo(readCameras, [])
+  const initialTuning = useMemo(readJoystickTuning, [])
   const [server, setServer] = useState(readServer)
   const [cameras, setCameras] = useState(initialCameras)
   const [selectedId, setSelectedId] = useState(initialCameras[0]?.id || '')
-  const [speed, setSpeed] = useState(8)
+  const [speed, setSpeed] = useState(initialTuning.speed)
+  const [sensitivity, setSensitivity] = useState(initialTuning.sensitivity)
   const [controlMode, setControlMode] = useState<ControlMode>(() => readControlMode(mode))
   const [notice, setNotice] = useState<Notice | null>(null)
   const [logs, setLogs] = useState<string[]>(['Console pronta. Cadastre ou selecione uma câmera.'])
@@ -50,6 +63,7 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
 
   useEffect(() => localStorage.setItem(CAMERAS_KEY, JSON.stringify(cameras)), [cameras])
   useEffect(() => localStorage.setItem(CONTROL_MODE_KEY, controlMode), [controlMode])
+  useEffect(() => localStorage.setItem(JOYSTICK_TUNING_KEY, JSON.stringify({speed, sensitivity})), [speed, sensitivity])
   useEffect(() => {
     localStorage.setItem(SERVER_KEY, JSON.stringify({host: server.host, port: server.port}))
     sessionStorage.setItem(`${SERVER_KEY}.token`, server.token)
@@ -167,8 +181,8 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
         <div className="ptz-dock ptz-control-dock"><DockTitle title="Controle PTZ"><div className="ptz-control-switch" role="group" aria-label="Tipo de controle exibido">{([['arrows', 'Setas'], ['joystick', 'Joystick'], ['both', 'Ambos']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={controlMode === value} className={controlMode === value ? 'active' : ''} onClick={() => setControlMode(value)}>{label}</button>)}</div><span className="ptz-protocol"><i /> VISCA over IP</span></DockTitle>
           <div className={`ptz-control-body mode-${controlMode}`}>{controlMode !== 'joystick' && <div className="ptz-control-column arrows"><p className="ptz-label">Setas direcionais</p><PTZDirectionPad hold={direction => hold('move', direction)} />
             <div className="ptz-button-row"><button {...hold('zoom', 'in')}><Icon name="zoomIn" /> Aproximar</button><button {...hold('zoom', 'out')}><Icon name="zoomOut" /> Afastar</button></div><button className="ptz-stop-button" onClick={() => void send('move', 'stop')}><Icon name="stop" /> Parar movimento</button></div>}
-            {controlMode !== 'arrows' && <div className="ptz-control-column joystick"><p className="ptz-label">Joystick / mira</p><PTZJoystick maxSpeed={speed} sensitivity={100} smoothness={65} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} />
-              <label className="ptz-speed"><span>Velocidade <strong>{speed}</strong></span><input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label></div>}</div>
+            {controlMode !== 'arrows' && <div className="ptz-control-column joystick"><p className="ptz-label">Joystick / mira</p><div className="ptz-joystick-layout"><PTZJoystick maxSpeed={speed} sensitivity={sensitivity} smoothness={65} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} />
+              <div className="ptz-joystick-tuning"><label><span>Velocidade <strong>{speed}</strong></span><input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label><label><span>Sensibilidade <strong>{sensitivity}%</strong></span><input type="range" min="50" max="150" value={sensitivity} onChange={event => setSensitivity(Number(event.target.value))} /></label></div></div></div>}</div>
         </div>
       </section>
 

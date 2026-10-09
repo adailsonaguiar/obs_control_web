@@ -3,7 +3,7 @@ import {ConnectionSettings, OBSControlAPI} from '../api'
 
 type Notice = {kind: 'success' | 'error'; text: string}
 type Preset = {id: string; name: string; number: number}
-type Camera = {id: string; name: string; host: string; port: number; snapshotUrl: string; presets: Preset[]}
+type Camera = {id: string; name: string; host: string; port: number; snapshotUrl: string; obsSceneName?: string; presets: Preset[]}
 type MobilePanel = 'cameras' | 'control' | 'presets'
 type ControlMode = 'arrows' | 'joystick' | 'both'
 type AxisLock = 'free' | 'horizontal' | 'vertical'
@@ -66,6 +66,8 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
   const [cameraEditor, setCameraEditor] = useState<Camera | 'new' | null>(null)
   const [presetEditor, setPresetEditor] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [obsPreviewUrl, setOBSPreviewUrl] = useState('')
+  const [previewState, setPreviewState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>(mode === 'joystick' ? 'control' : 'cameras')
   const client = useMemo(() => new OBSControlAPI(server), [server])
   const camera = cameras.find(item => item.id === selectedId) || cameras[0]
@@ -78,6 +80,42 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
     sessionStorage.setItem(`${SERVER_KEY}.token`, server.token)
   }, [server])
   useEffect(() => { if (!camera && selectedId) setSelectedId('') }, [camera, selectedId])
+  useEffect(() => {
+    let active = true
+    let refreshTimer = 0
+    let currentObjectUrl = ''
+    const sceneName = camera?.obsSceneName?.trim()
+
+    setOBSPreviewUrl('')
+    if (!sceneName) {
+      setPreviewState('idle')
+      return () => undefined
+    }
+
+    setPreviewState('loading')
+    const refresh = async () => {
+      try {
+        const image = await client.preview(sceneName, 960, 55)
+        if (!active) return
+        const nextObjectUrl = URL.createObjectURL(image)
+        if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl)
+        currentObjectUrl = nextObjectUrl
+        setOBSPreviewUrl(nextObjectUrl)
+        setPreviewState('ready')
+      } catch {
+        if (active) setPreviewState('error')
+      } finally {
+        if (active) refreshTimer = window.setTimeout(refresh, 1000)
+      }
+    }
+    void refresh()
+
+    return () => {
+      active = false
+      window.clearTimeout(refreshTimer)
+      if (currentObjectUrl) URL.revokeObjectURL(currentObjectUrl)
+    }
+  }, [camera?.id, camera?.obsSceneName, client])
 
   function log(message: string) {
     const time = new Intl.DateTimeFormat('pt-BR', {hour: '2-digit', minute: '2-digit', second: '2-digit'}).format(new Date())
@@ -112,7 +150,7 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
     const next: Camera = {
       id: cameraEditor === 'new' ? makeId() : cameraEditor!.id,
       name: String(data.get('name')).trim(), host: String(data.get('host')).trim(), port: Number(data.get('port')),
-      snapshotUrl: String(data.get('snapshotUrl')).trim(), presets: cameraEditor === 'new' ? [] : cameraEditor!.presets,
+      snapshotUrl: String(data.get('snapshotUrl')).trim(), obsSceneName: String(data.get('obsSceneName')).trim(), presets: cameraEditor === 'new' ? [] : cameraEditor!.presets,
     }
     setCameras(current => cameraEditor === 'new' ? [...current, next] : current.map(item => item.id === next.id ? next : item))
     setSelectedId(next.id); setCameraEditor(null); setMobilePanel('control'); log(`${cameraEditor === 'new' ? 'Câmera adicionada' : 'Câmera atualizada'}: ${next.name}`)
@@ -183,14 +221,16 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
 
       <section className={`ptz-stage ${mobilePanel === 'control' ? 'mobile-active' : ''}`}>
         <div className="ptz-preview">
-          {camera?.snapshotUrl ? <img src={camera.snapshotUrl} alt={`Prévia de ${camera.name}`} /> : <div className="ptz-preview-empty"><Icon name="camera" /><strong>Sem imagem de preview</strong><span>Informe uma URL de snapshot ou MJPEG no cadastro da câmera.</span></div>}
+          {obsPreviewUrl ? <img src={obsPreviewUrl} alt={`Prévia de ${camera?.name || 'câmera'} pelo OBS`} /> : camera?.snapshotUrl ? <img src={camera.snapshotUrl} alt={`Prévia de ${camera.name}`} /> : <div className="ptz-preview-empty"><Icon name="camera" /><strong>{previewState === 'loading' ? 'Carregando prévia do OBS' : previewState === 'error' ? 'Prévia do OBS indisponível' : 'Sem imagem de preview'}</strong><span>{previewState === 'error' ? 'Confirme o nome da cena, a conexão com o OBS e a fonte NDI.' : previewState === 'loading' ? 'A primeira imagem pode levar alguns instantes.' : 'Informe uma cena do OBS ou uma URL de snapshot no cadastro da câmera.'}</span></div>}
           <div className="ptz-safe-area" /><span className="ptz-preview-label">{camera ? `${camera.name} · ${camera.host}` : '—'}</span>
-        </div>
-        <div className="ptz-dock ptz-control-dock"><DockTitle title="Controle PTZ"><div className="ptz-control-switch" role="group" aria-label="Tipo de controle exibido">{([['arrows', 'Setas'], ['joystick', 'Joystick'], ['both', 'Ambos']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={controlMode === value} className={controlMode === value ? 'active' : ''} onClick={() => setControlMode(value)}>{label}</button>)}</div><span className="ptz-protocol"><i /> VISCA over IP</span></DockTitle>
+          {camera?.obsSceneName && <span className={`ptz-preview-status ${previewState}`} role="status">{previewState === 'ready' ? 'OBS · AO VIVO' : previewState === 'error' ? 'OBS · SEM SINAL' : 'OBS · CONECTANDO'}</span>}
+          <div className="ptz-control-overlay" aria-label="Controle PTZ sobre a prévia">
+            <div className="ptz-overlay-toolbar"><strong>Controle PTZ</strong><div className="ptz-control-switch" role="group" aria-label="Tipo de controle exibido">{([['arrows', 'Setas'], ['joystick', 'Joystick'], ['both', 'Ambos']] as const).map(([value, label]) => <button key={value} type="button" aria-pressed={controlMode === value} className={controlMode === value ? 'active' : ''} onClick={() => setControlMode(value)}>{label}</button>)}</div><span className="ptz-protocol"><i /> VISCA over IP</span></div>
           <div className={`ptz-control-body mode-${controlMode}`}>{controlMode !== 'joystick' && <div className="ptz-control-column arrows"><p className="ptz-label">Setas direcionais</p><PTZDirectionPad hold={direction => hold('move', direction)} />
             <div className="ptz-button-row"><button {...hold('zoom', 'in')}><Icon name="zoomIn" /> Aproximar</button><button {...hold('zoom', 'out')}><Icon name="zoomOut" /> Afastar</button></div><button className="ptz-stop-button" onClick={() => void send('move', 'stop')}><Icon name="stop" /> Parar movimento</button></div>}
             {controlMode !== 'arrows' && <div className="ptz-control-column joystick"><p className="ptz-label">Joystick / mira</p><div className="ptz-joystick-layout"><PTZJoystick maxSpeed={speed} sensitivity={sensitivity} smoothness={65} axisLock={axisLock} onMove={(direction, nextSpeed) => send('move', direction, nextSpeed)} onStop={() => send('move', 'stop')} />
               <div className="ptz-joystick-tuning"><label><span>Velocidade <strong>{speed}</strong></span><input type="range" min="1" max="24" value={speed} onChange={event => setSpeed(Number(event.target.value))} /></label><label><span>Sensibilidade <strong>{sensitivity}%</strong></span><input type="range" min="50" max="150" value={sensitivity} onChange={event => setSensitivity(Number(event.target.value))} /></label><div className="ptz-axis-control"><span>Travar movimento</span><div role="group" aria-label="Restrição de eixo do joystick">{([['free', 'Livre'], ['horizontal', 'Horizontal'], ['vertical', 'Vertical']] as const).map(([value, label]) => <button key={value} type="button" className={axisLock === value ? 'active' : ''} aria-pressed={axisLock === value} onClick={() => setAxisLock(value)}>{label}</button>)}</div></div></div></div></div>}</div>
+          </div>
         </div>
       </section>
 
@@ -205,8 +245,9 @@ export function PTZPage({mode}: {mode: 'arrows' | 'joystick'}) {
     {cameraEditor && <Modal title={cameraEditor === 'new' ? 'Nova câmera' : 'Editar câmera'} onClose={() => setCameraEditor(null)}><form onSubmit={saveCamera} className="ptz-form-dialog">
       <label>Nome<input name="name" required defaultValue={cameraEditor === 'new' ? '' : cameraEditor.name} placeholder="CAM 1 — Palco" /></label>
       <div className="ptz-form-row"><label>IP da câmera<input name="host" required inputMode="decimal" defaultValue={cameraEditor === 'new' ? '' : cameraEditor.host} placeholder="192.168.1.100" /></label><label className="port">Porta<input name="port" required type="number" min="1" max="65535" defaultValue={cameraEditor === 'new' ? 52381 : cameraEditor.port} /></label></div>
+      <label>Cena da câmera no OBS <small>Recomendado para NDI</small><input name="obsSceneName" defaultValue={cameraEditor === 'new' ? '' : cameraEditor.obsSceneName || ''} placeholder="CAM 1 — NDI" /></label>
       <label>URL de snapshot / MJPEG <small>Opcional</small><input name="snapshotUrl" type="url" defaultValue={cameraEditor === 'new' ? '' : cameraEditor.snapshotUrl} placeholder="http://192.168.1.100/snapshot.jpg" /></label>
-      <p>Os dados da câmera ficam salvos somente neste navegador.</p><ModalActions onCancel={() => setCameraEditor(null)} submit="Salvar câmera" />
+      <p>A cena do OBS usa a fonte NDI já configurada no Studio e não depende do RTMP. Os dados ficam salvos somente neste navegador.</p><ModalActions onCancel={() => setCameraEditor(null)} submit="Salvar câmera" />
     </form></Modal>}
     {presetEditor && camera && <Modal title="Gravar preset" onClose={() => setPresetEditor(false)}><form onSubmit={savePreset} className="ptz-form-dialog"><label>Nome<input name="name" required autoFocus placeholder="Plano geral" /></label><label>Memória da câmera<input name="number" required type="number" min="0" max="255" defaultValue={camera.presets.length + 1} /></label><p>A posição atual de pan, tilt e zoom será gravada diretamente na memória da câmera.</p><ModalActions onCancel={() => setPresetEditor(false)} submit="Gravar posição" /></form></Modal>}
     {settingsOpen && <Modal title="Conexão com o servidor" onClose={() => setSettingsOpen(false)}><form className="ptz-form-dialog" onSubmit={event => { event.preventDefault(); setSettingsOpen(false); setNotice({kind: 'success', text: 'Configuração do servidor atualizada.'}) }}><label>IP do servidor<input value={server.host} onChange={event => setServer({...server, host: event.target.value})} /></label><label>Porta<input type="number" min="1" max="65535" value={server.port} onChange={event => setServer({...server, port: Number(event.target.value)})} /></label><label>Token da API<input type="password" value={server.token} onChange={event => setServer({...server, token: event.target.value})} /></label><p>O token permanece apenas nesta sessão do navegador.</p><ModalActions onCancel={() => setSettingsOpen(false)} submit="Concluir" /></form></Modal>}

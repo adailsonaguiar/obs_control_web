@@ -54,6 +54,7 @@ A distribuição da interface deve aproveitar bem o espaço disponível e se ada
 - Layout responsivo para computador, tablet e celular.
 - Token mantido apenas durante a sessão por padrão.
 - Controle momentâneo de direção e zoom para câmeras PTZ compatíveis com VISCA over IP.
+- Preview de câmeras PTZ por cena do OBS, inclusive fontes NDI, sem depender de RTMP ativo.
 
 ## Pré-requisitos
 

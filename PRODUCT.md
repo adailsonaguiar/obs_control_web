@@ -26,13 +26,14 @@ Uma central web que combina controle do OBS e de câmeras VISCA over IP na mesma
 
 ## Capabilities and Constraints
 
-- O OBS Deck é gratuito e controla cenas, fontes, gravação e transmissão.
-- O controle PTZ usa VISCA over IP e é um recurso pago.
-- O plano PTZ custa R$ 20 por mês ou R$ 200 por ano.
+- O OBS Deck controla cenas, fontes, gravação e transmissão e faz parte da assinatura.
+- O controle PTZ usa VISCA over IP e faz parte da mesma assinatura.
+- A assinatura custa R$ 20 por mês ou R$ 200 por ano e libera as duas ferramentas.
 - A autenticação de usuários usa Firebase Auth.
 - A cobrança recorrente usa Stripe Checkout; webhooks e validação de assinatura pertencem ao backend.
 - Os identificadores de preço e valores exibidos devem ficar centralizados e ser facilmente configuráveis.
-- A rota `/ptz` deve exigir usuário autenticado com assinatura ativa validada pelo backend.
+- As rotas `/deck` e `/ptz` devem exigir usuário autenticado com assinatura ativa validada pelo backend.
+- A rota `/produtos` deve exigir autenticação e funcionar como central de acesso às duas ferramentas.
 - Credenciais e chaves privadas nunca podem ser incluídas no cliente.
 
 ## Brand Commitments
@@ -52,7 +53,7 @@ Uma central web que combina controle do OBS e de câmeras VISCA over IP na mesma
 
 - Colocar comandos essenciais ao alcance imediato durante uma transmissão.
 - Exibir com clareza conexão, ferramenta ativa e resultado de cada ação.
-- Manter o OBS Deck útil gratuitamente e comunicar o valor do PTZ sem esconder preços.
+- Comunicar com clareza que uma assinatura libera OBS Deck e Controle PTZ, sem esconder preços.
 - Proteger compra e acesso pago no servidor, nunca apenas na interface.
 - Funcionar bem com mouse e toque em computador, tablet e celular.
 

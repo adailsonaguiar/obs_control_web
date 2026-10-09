@@ -52,7 +52,7 @@ export function SEO({title, description, path, type = 'website'}: Props) {
       '@context': 'https://schema.org',
       '@graph': [
         {'@type': 'Organization', '@id': `${siteUrl}/#organization`, name: 'Vero Lab', url: 'https://verolabso.com/', email: 'verolabso@gmail.com'},
-        {'@type': path === '/' ? 'WebSite' : 'SoftwareApplication', '@id': `${canonicalUrl}#product`, name: path === '/' ? 'OBS Stream Tools' : 'OBS Deck', url: canonicalUrl, description, inLanguage: 'pt-BR', publisher: {'@id': `${siteUrl}/#organization`}, ...(path === '/deck' ? {applicationCategory: 'MultimediaApplication', operatingSystem: 'Web', offers: {'@type': 'Offer', price: '0', priceCurrency: 'BRL'}} : {})},
+        {'@type': path === '/' ? 'WebSite' : 'SoftwareApplication', '@id': `${canonicalUrl}#product`, name: path === '/' ? 'OBS Stream Tools' : path.startsWith('/ptz') ? 'Controle PTZ' : path === '/deck' ? 'OBS Deck' : 'OBS Stream Tools', url: canonicalUrl, description, inLanguage: 'pt-BR', publisher: {'@id': `${siteUrl}/#organization`}, ...(path === '/deck' || path.startsWith('/ptz') ? {applicationCategory: 'MultimediaApplication', operatingSystem: 'Web'} : {})},
       ],
     }
     let script = document.head.querySelector<HTMLScriptElement>('script[data-seo-schema]')

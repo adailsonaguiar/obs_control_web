@@ -21,7 +21,7 @@ export function SubscribePage() {
 
   return <main className="checkout-page">
     <header><a href="/" className="account-brand"><img src="/logo.png" alt="" /><span><strong>OBS Stream</strong><small>TOOLS</small></span></a><button onClick={() => void signOut().then(() => window.location.assign('/'))}>Sair</button></header>
-    <section className="checkout-heading"><span>CONTROLE PTZ PRO</span><h1>Escolha como quer assinar.</h1><p>Os dois planos liberam todas as ferramentas PTZ. Cancele a renovação quando quiser pelo portal de cobrança.</p></section>
+    <section className="checkout-heading"><span>OBS STREAM TOOLS</span><h1>Uma assinatura. Duas superfícies de controle.</h1><p>Os planos mensal e anual liberam o OBS Deck e o Controle PTZ completos na mesma conta.</p></section>
     <div className="checkout-plans">{billingPlans.map(plan => <article key={plan.id} className={plan.highlight ? 'highlight' : ''}>
       {plan.highlight && <span className="checkout-badge">ECONOMIZE R$ 40</span>}
       <h2>{plan.name}</h2><strong>{plan.priceLabel}<small>{plan.intervalLabel}</small></strong><p>{plan.description}</p>

@@ -11,8 +11,8 @@ export type BillingPlan = {
 }
 
 export const billingPlans: BillingPlan[] = [
-  {id: 'ptz-monthly', name: 'Mensal', description: 'Flexibilidade para começar e cancelar quando quiser.', priceLabel: 'R$ 20', intervalLabel: '/mês', features: ['Controle de múltiplas câmeras', 'Joystick, setas e zoom', 'Presets por câmera', 'Atualizações do PTZ Pro']},
-  {id: 'ptz-yearly', name: 'Anual', description: 'Doze meses de controle pagando o equivalente a dez.', priceLabel: 'R$ 200', intervalLabel: '/ano', features: ['Tudo do plano mensal', '2 meses de economia', 'Uma renovação por ano', 'Atualizações do PTZ Pro'], highlight: true},
+  {id: 'ptz-monthly', name: 'Mensal', description: 'Acesso completo às duas ferramentas com renovação mensal.', priceLabel: 'R$ 20', intervalLabel: '/mês', features: ['OBS Deck completo', 'Controle PTZ completo', 'Uso em celular, tablet e computador', 'Atualizações incluídas']},
+  {id: 'ptz-yearly', name: 'Anual', description: 'Doze meses de acesso pagando o equivalente a dez.', priceLabel: 'R$ 200', intervalLabel: '/ano', features: ['OBS Deck completo', 'Controle PTZ completo', '2 meses de economia', 'Atualizações incluídas'], highlight: true},
 ]
 
 const configuredApiUrl = import.meta.env.VITE_BILLING_API_URL?.trim().replace(/\/$/, '') || ''

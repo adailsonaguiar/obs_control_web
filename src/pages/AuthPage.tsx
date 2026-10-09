@@ -1,5 +1,6 @@
 import {FormEvent, useState} from 'react'
 import {isAuthConfigured, useAuth} from '../auth'
+import {safeLocalReturnTo} from '../navigation'
 
 function messageFor(error: unknown) {
   const code = typeof error === 'object' && error && 'code' in error ? String(error.code) : ''
@@ -16,7 +17,7 @@ export function AuthPage() {
   const [error, setError] = useState('')
   const params = new URLSearchParams(window.location.search)
   const requestedReturn = params.get('returnTo')
-  const returnTo = requestedReturn?.startsWith('/') ? requestedReturn : '/assinar'
+  const returnTo = safeLocalReturnTo(requestedReturn)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -33,7 +34,7 @@ export function AuthPage() {
   return <main className="account-page">
     <a className="account-brand" href="/"><img src="/logo.png" alt="" /><span><strong>OBS Stream</strong><small>TOOLS</small></span></a>
     <section className="account-card">
-      <div className="account-intro"><span>ACESSO SEGURO</span><h1>{mode === 'login' ? 'Entre para controlar suas câmeras.' : 'Crie sua conta de operador.'}</h1><p>Seu acesso identifica a assinatura PTZ e mantém a compra vinculada a você.</p></div>
+      <div className="account-intro"><span>ACESSO SEGURO</span><h1>{mode === 'login' ? 'Entre na sua central de produção.' : 'Crie sua conta de operador.'}</h1><p>Sua conta reúne a assinatura e o acesso ao OBS Deck e ao Controle PTZ.</p></div>
       {!isAuthConfigured && <p className="account-alert" role="alert">Configure as variáveis VITE_FIREBASE_* para ativar a autenticação.</p>}
       <form onSubmit={submit}>
         <label>E-mail<input name="email" type="email" autoComplete="email" required /></label>

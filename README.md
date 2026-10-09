@@ -140,7 +140,7 @@ Chaves privadas, IDs de preço confiáveis e webhooks devem permanecer exclusiva
 
 Os planos exibidos ficam centralizados em `src/billing.ts`: `ptz-monthly` por R$ 20/mês e `ptz-yearly` por R$ 200/ano. O backend deve mapear esses IDs para os respectivos Price IDs da Stripe; nunca aceite um valor monetário enviado pelo navegador.
 
-### Firebase Auth e proteção do PTZ
+### Firebase Auth e proteção dos produtos
 
 Ative o provedor E-mail/Senha no Firebase Authentication e configure as variáveis `VITE_FIREBASE_*` descritas em `.env.example`. O cliente envia o Firebase ID token como `Authorization: Bearer <token>` ao backend de cobrança.
 
@@ -153,7 +153,7 @@ Authorization: Bearer <Firebase ID token>
 200 {"active": true, "planId": "ptz-monthly", "currentPeriodEnd": "2026-10-30T00:00:00Z"}
 ```
 
-O backend deve validar o token com Firebase Admin e consultar a assinatura atualizada pelo webhook da Stripe. `active` só pode ser verdadeiro para uma assinatura em estado aceito pela regra comercial. A checagem no React melhora a experiência e protege a navegação, mas a API que envia comandos PTZ também deve exigir o mesmo token e entitlement; uma rota SPA nunca é uma fronteira de segurança suficiente.
+O backend deve validar o token com Firebase Admin e consultar a assinatura atualizada pelo webhook da Stripe. `active` só pode ser verdadeiro para uma assinatura em estado aceito pela regra comercial. A rota autenticada `/produtos` centraliza o acesso, e `/deck` e `/ptz` exigem assinatura ativa. A checagem no React melhora a experiência e protege a navegação, mas as APIs que recebem comandos também devem exigir o mesmo token e entitlement; uma rota SPA nunca é uma fronteira de segurança suficiente.
 
 O webhook deve associar `customer`/`subscription` ao `uid` do Firebase usando metadados criados no checkout e persistir apenas identificadores e estado da assinatura. Não armazene dados de cartão.
 
@@ -167,7 +167,7 @@ npm audit
 
 ## Segurança
 
-- Não exponha as portas `3456`, `5173` ou `4173` diretamente à internet.
+- Não exponha as portas `3456`, `5175` ou `4173` diretamente à internet.
 - Use apenas uma rede local confiável ou uma VPN privada.
 - Mantenha um token longo e exclusivo no OBS Control Server.
 - A opção **Lembrar o token** salva a credencial no armazenamento local do navegador. Deixe-a desmarcada em dispositivos compartilhados.

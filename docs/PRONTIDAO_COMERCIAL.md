@@ -1,5 +1,7 @@
 # Especificação de prontidão comercial
 
+Plano técnico de execução: `docs/PLANO_IMPLEMENTACAO_PRE_CHECKOUT.md`.
+
 ## Objetivo
 
 Preparar o OBS Stream Tools para vender assinaturas no Brasil com informações comerciais claras, documentação jurídica, proteção de dados, cancelamento e controles técnicos compatíveis com o modelo de cobrança recorrente.

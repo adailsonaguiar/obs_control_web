@@ -11,11 +11,12 @@ Especificar as mudanças técnicas necessárias para transformar o checkout exis
 3. Usuário escolhe o plano e aceita explicitamente os documentos.
 4. Backend valida identidade, plano e versões vigentes.
 5. Backend registra o aceite e cria a sessão Stripe Checkout.
-6. Stripe confirma eventos por webhook assinado.
-7. Backend persiste o estado normalizado da assinatura.
-8. APIs de produto validam Firebase ID token e entitlement ativo.
-9. Usuário gerencia ou cancela a assinatura em sessão autenticada do portal.
-10. Webhook atualiza o entitlement e a interface mostra o período final de acesso.
+6. Stripe inicia período gratuito de 2 dias e agenda a primeira cobrança para o 3º dia.
+7. Stripe confirma eventos por webhook assinado.
+8. Backend persiste o estado normalizado da assinatura.
+9. APIs de produto validam Firebase ID token e entitlement ativo.
+10. Usuário gerencia ou cancela a assinatura em sessão autenticada do portal.
+11. Webhook atualiza o entitlement e a interface mostra o período final de acesso.
 
 ## Documentos versionados
 
@@ -101,6 +102,8 @@ Opcional. Registra pedido autenticado do titular. O primeiro lançamento pode us
 - `status`
 - `currentPeriodEnd`
 - `cancelAtPeriodEnd`
+- `trialEnd`
+- `trialConsumedAt`
 - `updatedAt`
 
 ### `legalAcceptances/{acceptanceId}`
@@ -118,6 +121,7 @@ O identificador não deve ser previsível. A leitura é restrita ao próprio usu
 - `customer.subscription.created`
 - `customer.subscription.updated`
 - `customer.subscription.deleted`
+- `customer.subscription.trial_will_end`
 - `invoice.paid`
 - `invoice.payment_failed`
 
@@ -165,6 +169,9 @@ Requisitos:
 
 - checkout rejeita plano desconhecido;
 - checkout rejeita documento desatualizado;
+- checkout informa a data exata da primeira cobrança após os 2 dias de teste;
+- cancelamento durante o teste impede a primeira cobrança;
+- cliente que já consumiu o teste não recebe novo período gratuito;
 - aceite não é criado para usuário não autenticado;
 - repetição da mesma requisição não cria assinaturas duplicadas;
 - webhook inválido é rejeitado;

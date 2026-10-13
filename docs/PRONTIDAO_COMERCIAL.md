@@ -48,15 +48,16 @@ Dados já fornecidos:
 - CNPJ: **64.491.841/0001-21**;
 - sede: **QD ARSO 101 AL 12 QI 08 LT 07 A 7A, Plano Diretor Sul, CEP 77018-410, Palmas/TO**;
 - CNAE principal informado: **6201-5/01 — Desenvolvimento de programas de computador sob encomenda**;
+- CNAEs adicionais confirmados: **6202-3/00, 6204-0/00, 6209-1/00 e 6311-9/00**;
 - e-mail: **verolabso@gmail.com**;
 - mercado pretendido: **pessoas físicas e jurídicas**.
 - regime tributário: **Simples Nacional**;
 - inscrição municipal: **ativa**;
 - emissão de NFS-e: **já operacional e realizada manualmente**.
 - prazo de emissão da NFS-e: **no mesmo dia da confirmação do pagamento**.
-- conjunto fiscal mínimo proposto: **nome ou razão social, CPF/CNPJ, e-mail, telefone e endereço completo com CEP**; para pessoa jurídica, inscrição municipal/estadual quando aplicável.
+- conjunto fiscal mínimo definido: **nome ou razão social, CPF/CNPJ, e-mail, telefone e endereço completo com CEP**; para pessoa jurídica, inscrição municipal/estadual somente quando aplicável.
 
-Pendências contábeis e operacionais: confirmar se o CNAE principal atual é suficiente para assinatura/licenciamento de software próprio, se serão necessários CNAEs secundários e validar com o contador e no WebISS os campos obrigatórios do tomador.
+Pendência operacional residual: conferir no WebISS eventuais campos adicionais obrigatórios do tomador no momento da implementação.
 
 **Critério de aceite:** checkout, rodapé, documentos e notas usam a mesma identificação oficial.
 
@@ -64,12 +65,29 @@ Pendências contábeis e operacionais: confirmar se o CNAE principal atual é su
 
 **Resultado:** política comercial aprovada, escrita antes de programar o fluxo.
 
-- [ ] Definir quando o cancelamento produz efeito.
-- [ ] Definir acesso até o fim do período pago.
-- [ ] Definir tratamento do direito de arrependimento.
-- [ ] Definir reembolso total, parcial, duplicidade e cobrança indevida.
-- [ ] Definir prazo e canal de resposta.
-- [ ] Definir consequência de chargeback e fraude.
+- [x] Definir quando o cancelamento produz efeito.
+- [x] Definir acesso até o fim do período pago.
+- [x] Definir tratamento do direito de arrependimento.
+- [x] Definir reembolso total, parcial, duplicidade e cobrança indevida.
+- [x] Definir prazo e canal de resposta.
+- [x] Definir consequência de chargeback e fraude.
+
+Decisões já aprovadas:
+
+- o pedido de cancelamento interrompe imediatamente a renovação automática;
+- o acesso permanece ativo até o fim do período já pago;
+- não haverá reembolso proporcional após o prazo de arrependimento, exceto em cobrança duplicada, indevida ou outra hipótese obrigatória.
+- o cliente poderá exercer o direito de arrependimento em até **7 dias corridos após a contratação inicial**;
+- o arrependimento válido resultará em estorno integral e encerramento do acesso após a confirmação do reembolso;
+- inicialmente, a solicitação será recebida pelo suporte e posteriormente também pela área autenticada da conta.
+- o recebimento será confirmado imediatamente ou em até **1 dia útil**;
+- a análise e o início do estorno válido ocorrerão em até **2 dias úteis**;
+- a efetiva disponibilização do crédito seguirá o prazo da Stripe, do banco ou do emissor do cartão.
+- pagamento revertido, contestado ou identificado como fraudulento poderá suspender o acesso;
+- o cliente será notificado e poderá esclarecer ou regularizar o pagamento;
+- a conta não será excluída automaticamente apenas pela existência de contestação.
+- cobrança comprovadamente duplicada ou indevida será estornada integralmente;
+- quando outra cobrança válida sustentar a assinatura, o estorno da duplicidade não encerrará o acesso.
 
 **Critério de aceite:** toda situação comum possui regra clara, operacionalizável e validada juridicamente.
 
@@ -85,6 +103,47 @@ Pendências contábeis e operacionais: confirmar se o CNAE principal atual é su
 - [ ] Responsabilidades sobre OBS, câmeras, rede e transmissão.
 - [ ] Cobrança, renovação, cancelamento e suspensão.
 - [ ] Lei aplicável, atendimento e alterações do documento.
+
+Decisão já aprovada:
+
+- cada assinatura permite **um operador utilizando o acesso por vez**;
+- uso simultâneo ou compartilhamento concorrente do mesmo acesso não será permitido.
+- não haverá limite fixo de dispositivos cadastrados ou computadores com OBS;
+- o operador poderá alternar livremente entre dispositivos, mantendo somente uma sessão operacional ativa por vez.
+- a contratação será permitida para pessoa com **18 anos ou mais** ou representante autorizado de pessoa jurídica;
+- menores poderão utilizar o produto somente sob autorização e responsabilidade de responsável legal.
+- o produto requer OBS Studio com WebSocket habilitado e OBS Control Server no computador principal;
+- o controle exige navegador moderno e conexão pela mesma rede local confiável ou VPN privada;
+- recursos PTZ exigem câmera compatível com VISCA over IP;
+- o cliente é responsável pela configuração da rede, firewall, equipamentos e credenciais;
+- alterações em componentes de terceiros poderão afetar a compatibilidade.
+- serão proibidos compartilhamento simultâneo, revenda não autorizada, burla de autenticação ou assinatura, acesso indevido, uso ilegal, exploração não autorizada do código, ataques, automação abusiva e exposição insegura deliberada de credenciais ou portas;
+- violações poderão gerar orientação, aviso, suspensão preventiva ou encerramento proporcional à gravidade e reincidência.
+- não haverá SLA formal de uptime no lançamento inicial;
+- a VEROLAB empregará esforços razoáveis para manter os serviços disponíveis e corrigir falhas;
+- manutenções planejadas relevantes serão comunicadas quando possível;
+- indisponibilidades poderão decorrer da internet, rede local, OBS, Firebase, Stripe e demais terceiros;
+- o suporte será prestado por `verolabso@gmail.com`, com resposta inicial em até **2 dias úteis**.
+- a VEROLAB será identificada como titular do código, interface, documentação, identidade visual e demais componentes próprios;
+- a assinatura concederá licença limitada de uso durante sua vigência, sem transferência de propriedade;
+- marcas e tecnologias de terceiros permanecerão pertencentes aos respectivos titulares, sem implicar afiliação ou patrocínio.
+- o operador deverá conferir o estado real de cenas, fontes, gravação, transmissão, enquadramento e equipamentos antes e depois de comandos críticos;
+- o produto não garantirá continuidade de transmissão, gravação, internet, energia, rede ou funcionamento de terceiros;
+- a VEROLAB permanecerá responsável nos limites obrigatórios da legislação.
+- reajustes serão comunicados com pelo menos **30 dias de antecedência**;
+- o novo valor será aplicado somente na renovação seguinte, permitindo cancelamento antes da cobrança.
+- mudanças relevantes nos Termos serão comunicadas com pelo menos **15 dias de antecedência**;
+- alterações urgentes por exigência legal ou segurança poderão ter efeito imediato, com comunicação assim que possível;
+- mudanças que exijam consentimento solicitarão novo aceite versionado.
+- os Termos serão regidos pelas leis brasileiras;
+- relações empresariais indicarão o foro de Palmas/TO;
+- relações de consumo preservarão o foro e os direitos legalmente assegurados ao consumidor.
+- haverá teste gratuito de **2 dias corridos**, com primeira cobrança no **3º dia**;
+- o checkout mostrará a data exata da primeira cobrança;
+- o cancelamento antes do fim do teste impedirá qualquer cobrança.
+- o método de pagamento será informado no início do teste;
+- haverá somente um teste por cliente, controlado por conta, CPF/CNPJ e identificador do cliente Stripe;
+- depois de utilizado ou cancelado o teste, uma nova assinatura terá cobrança imediata.
 
 **Critério de aceite:** texto aprovado por advogado e publicado em URL estável.
 

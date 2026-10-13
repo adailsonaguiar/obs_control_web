@@ -25,7 +25,7 @@ Documento mínimo:
 ```ts
 type LegalDocument = {
   type: 'terms' | 'privacy' | 'refund'
-  version: string
+  version: string // data de vigência no formato AAAA-MM-DD
   effectiveAt: string
   url: string
   sha256: string
@@ -41,10 +41,14 @@ type LegalAcceptance = {
   termsVersion: string
   privacyVersion: string
   refundVersion: string
+  planId: string
+  source: 'checkout'
 }
 ```
 
 Não registrar texto integral do documento em cada aceite. Preservar a versão publicada de forma imutável e associá-la pelo identificador e hash.
+
+O registro de aceite é somente acrescentado, nunca sobrescrito. Correções ou novas publicações geram outra versão e outro registro quando novo aceite for necessário.
 
 ## Alterações de API propostas
 
@@ -73,6 +77,8 @@ Validações obrigatórias:
 
 - Firebase ID token válido;
 - plano pertencente à lista mantida no backend;
+- versões informadas iguais às versões vigentes no backend;
+- aceite explícito, não pré-marcado, realizado antes da criação da sessão;
 - versões iguais às versões vigentes;
 - origem permitida;
 - usuário sem sessão duplicada incompatível;
@@ -151,10 +157,12 @@ Requisitos:
 
 - resumo do plano, preço e periodicidade;
 - informação destacada sobre renovação;
-- checkbox único ou separado conforme validação jurídica, nunca pré-marcado;
+- checkbox único obrigatório, nunca pré-marcado: “Li e aceito os Termos de Uso e a Política de Cancelamento e Reembolso e declaro estar ciente da Política de Privacidade.”;
 - links abrindo os documentos vigentes;
 - botão desabilitado até aceite;
 - mensagem recuperável para versão desatualizada.
+
+O consentimento do GA4 não integra o aceite contratual: deve ser solicitado no banner próprio e sua recusa não pode impedir a contratação.
 
 ### Área da conta
 
@@ -162,6 +170,7 @@ Requisitos:
 - plano atual;
 - data da próxima renovação ou fim do acesso;
 - ação “Gerenciar assinatura”;
+- motivo de cancelamento opcional, sem bloquear ou atrasar a operação;
 - histórico ou comprovante de aceite acessível sob solicitação;
 - canais de suporte e privacidade.
 

@@ -151,18 +151,20 @@ Decisão já aprovada:
 
 **Resultado:** inventário de dados e política aderente ao processamento real.
 
-- [ ] Mapear dados, finalidade, base legal e retenção.
+- [x] Mapear dados, finalidade, base legal e retenção em rascunho sujeito a revisão jurídica.
 - [x] Mapear inicialmente Firebase, Stripe, Google Cloud e demais operadores conhecidos.
-- [ ] Documentar transferências internacionais.
+- [x] Documentar diretriz de transferências internacionais pelos fornecedores Google/Firebase, Google Cloud, GA4 e Stripe, com transparência, minimização e salvaguardas compatíveis com a LGPD.
 - [x] Definir canal de atendimento aos titulares: `verolabso@gmail.com`.
-- [ ] Definir exclusão de conta e retenções obrigatórias.
-- [ ] Documentar cookies, local storage e analytics.
+- [x] Definir retenções: conta comum por até 24 meses após o término; documentos fiscais e comprovantes por no mínimo 5 anos ou enquanto persistir obrigação pendente. Validar detalhes da NFS-e de Palmas com o contador.
+- [x] Documentar cookies e local storage no rascunho. GA4 definido: somente após consentimento, páginas públicas, acessos e localização aproximada, retenção detalhada de 2 meses e preferência por 6 meses; sem pixels publicitários, localização precisa ou dados das interfaces do produto.
 
 **Critério de aceite:** a política descreve o sistema real e nenhum dado é coletado sem finalidade registrada.
 
 ### Passo 5 — Política de Cancelamento e Reembolso
 
 **Resultado:** versão pública e resumida das decisões do Passo 2.
+
+Rascunho criado em `docs/POLITICA_DE_CANCELAMENTO_E_REEMBOLSO_RASCUNHO.md`, sujeito a revisão jurídica e implementação do autosserviço.
 
 - [ ] Publicar rota própria.
 - [ ] Vincular no checkout, rodapé, FAQ e área da conta.
@@ -185,11 +187,13 @@ Decisão já aprovada:
 
 **Resultado:** evidência do documento aceito antes da criação da assinatura.
 
-- [ ] Checkbox não pré-marcado no checkout.
-- [ ] Links para os documentos vigentes.
+- [x] Definir checkbox único, obrigatório e não pré-marcado no checkout.
+- [x] Definir links individuais para os documentos vigentes.
 - [ ] Registrar UID, versões, instante e contexto mínimo necessário.
 - [ ] Bloquear checkout sem aceite.
 - [ ] Definir quando uma alteração exige novo aceite.
+
+Padrão aprovado: versão pela data de vigência (`AAAA-MM-DD`) e registro imutável de UID, versões, data/hora, plano e origem do aceite.
 
 **Critério de aceite:** é possível demonstrar qual versão cada usuário aceitou sem registrar dados excessivos.
 
@@ -198,10 +202,14 @@ Decisão já aprovada:
 **Resultado:** canais públicos com processo interno de resposta.
 
 - [ ] Definir e-mail de suporte.
-- [ ] Definir canal de privacidade/LGPD.
+- [x] Definir canal de privacidade/LGPD: `verolabso@gmail.com`, acompanhado pelo Administrador da VEROLAB.
 - [ ] Criar categorias e prazos internos.
 - [ ] Criar procedimento para acesso, correção, exclusão e oposição.
 - [ ] Criar procedimento para incidentes de segurança.
+
+Rascunho interno criado em `docs/PROCEDIMENTO_INTERNO_DE_ATENDIMENTO.md`, usando protocolos `VRL-AAAAMMDD-NNN`.
+
+Controle confirmado: autenticação em dois fatores ativa no e-mail oficial.
 
 **Critério de aceite:** solicitações recebem protocolo, responsável e conclusão registrada.
 

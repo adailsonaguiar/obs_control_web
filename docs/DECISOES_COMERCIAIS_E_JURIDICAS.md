@@ -29,8 +29,9 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 | Município/UF | Palmas/TO |
 | E-mail de suporte | `verolabso@gmail.com` |
 | E-mail de privacidade/LGPD | `verolabso@gmail.com` |
-| Telefone ou canal alternativo | PENDENTE |
-| Responsável pelo atendimento | PENDENTE |
+| Telefone ou canal alternativo | Não haverá no lançamento; o e-mail será o único canal oficial |
+| Responsável pelo atendimento | Administrador da VEROLAB |
+| Segurança do e-mail oficial | Autenticação em dois fatores ativada |
 
 ## Operação fiscal
 
@@ -52,6 +53,7 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 | Campo | Decisão |
 | --- | --- |
 | Canal de cancelamento | Proposto: autosserviço autenticado pelo Stripe Customer Portal |
+| Motivo do cancelamento | Campo opcional; não pode impedir, atrasar ou dificultar o cancelamento |
 | Efeito do cancelamento | A solicitação interrompe imediatamente a renovação automática |
 | Acesso após cancelamento | Mantido até o fim do período já pago |
 | Direito de arrependimento | Até 7 dias corridos após a contratação inicial, com estorno integral e encerramento do acesso após confirmação do reembolso |
@@ -63,18 +65,37 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 | Chargeback e fraude | Pagamento revertido, contestado ou identificado como fraudulento pode suspender o acesso; cliente é notificado e pode esclarecer ou regularizar; conta não é excluída automaticamente apenas pela contestação |
 | Canal inicial para arrependimento | Suporte; futuramente também pela área autenticada da conta |
 
+O motivo informado no cancelamento poderá ser utilizado para melhoria do produto e análise agregada. O cliente poderá concluir o cancelamento sem responder, e a ausência de resposta não afetará seus direitos nem o período de acesso restante.
+
 ## Privacidade e dados
 
 | Campo | Decisão |
 | --- | --- |
 | Controlador dos dados | VEROLAB SOLUCOES EM TECNOLOGIA LTDA - ME, CNPJ 64.491.841/0001-21 |
 | Operadores conhecidos | Google/Firebase, Google Cloud e Stripe |
-| Analytics e marketing | PENDENTE |
+| Transferência internacional | Permitida quando necessária aos serviços de Google/Firebase, Google Cloud, GA4 e Stripe, com transparência e mecanismos legais e de segurança compatíveis com a LGPD |
+| Analytics | Google Analytics 4 (GA4), somente nas páginas públicas, para medir quantidade de acessos e localização geográfica aproximada |
+| Retenção dos dados detalhados do GA4 | 2 meses |
+| Validade da preferência de analytics | 6 meses para aceite ou recusa; solicitar novamente após o prazo ou mudança relevante |
+| Pixels e publicidade comportamental | Não previstos |
 | Canal para direitos do titular | `verolabso@gmail.com` |
-| Retenção da conta | PENDENTE |
-| Retenção de dados de assinatura/fiscais | PENDENTE |
-| Exclusão de conta | PENDENTE |
+| Retenção da conta | Até 24 meses após o término da assinatura, com aviso antes da exclusão automática |
+| Retenção de dados de assinatura/fiscais | No mínimo 5 anos, ou por prazo superior enquanto houver processo, fiscalização ou obrigação pendente; validação final com o contador quanto à NFS-e de Palmas |
+| Exclusão de conta | Permitida antecipadamente mediante solicitação do titular, ressalvados dados que devam ser preservados por obrigação legal, prevenção a fraude ou exercício de direitos |
+| Prazo da solicitação de exclusão | Confirmação em até 2 dias úteis e conclusão operacional em até 15 dias corridos, salvo retenção legal comunicada ao titular |
 | Público menor de idade | Contratação somente por pessoa com 18 anos ou mais ou representante autorizado; uso por menor somente sob autorização e responsabilidade do responsável legal |
+
+### Bases legais aprovadas preliminarmente
+
+| Finalidade | Base legal preliminar |
+| --- | --- |
+| Criar e administrar conta, assinatura, suporte e acesso ao produto | Execução de contrato e procedimentos preliminares relacionados ao contrato |
+| Emitir notas fiscais e manter registros obrigatórios | Cumprimento de obrigação legal ou regulatória |
+| Prevenir fraude, proteger contas, infraestrutura e produto | Legítimo interesse, mediante avaliação, necessidade, minimização e preservação dos direitos do titular |
+| Medir acessos e localização aproximada no site público pelo GA4 | Consentimento |
+| Preservar provas e atuar em processos, cobranças ou disputas | Exercício regular de direitos |
+
+As bases são preliminares e deverão ser validadas por advogado antes da publicação. Consentimento não deverá ser usado quando o tratamento for necessário para executar o contrato ou cumprir obrigação legal.
 
 ### Inventário técnico inicial de dados
 
@@ -89,6 +110,69 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 | Navegador — preferências | Favoritos de áudio e demais preferências funcionais | Armazenados localmente no dispositivo |
 
 Os dados locais de conexão com OBS e câmeras PTZ não devem ser enviados à Stripe, ao Firebase Analytics ou a logs. A política pública deverá distinguir claramente armazenamento local no dispositivo de dados enviados à infraestrutura da VEROLAB e de seus operadores.
+
+### Retenção e encerramento da conta
+
+- a conta sem assinatura ativa poderá ser mantida por até 24 meses após o encerramento do último período contratado;
+- antes da exclusão automática, a VEROLAB deverá avisar o titular pelo e-mail cadastrado e oferecer prazo razoável para reativação ou solicitação de informações;
+- o titular poderá solicitar a exclusão antecipada pelo canal `verolabso@gmail.com`;
+- o recebimento da solicitação será confirmado em até 2 dias úteis e a exclusão operacional será concluída em até 15 dias corridos;
+- quando houver dados sujeitos a retenção obrigatória, a resposta informará ao titular quais categorias não puderam ser excluídas imediatamente e por qual motivo geral;
+- a exclusão da conta não elimina registros que precisem ser mantidos para obrigação legal ou regulatória, emissão e guarda fiscal, prevenção a fraude, cobrança ou exercício regular de direitos;
+- dados preservados após a exclusão deverão ficar com acesso restrito, ser usados somente para essas finalidades e eliminados ou anonimizados ao fim do prazo aplicável;
+- notas fiscais, comprovantes de pagamento e dados mínimos necessários à comprovação da contratação serão conservados por no mínimo 5 anos, ou por prazo superior enquanto houver processo, fiscalização ou obrigação pendente;
+- o prazo e o conjunto documental aplicáveis à NFS-e de Palmas deverão ser confirmados com o contador antes da publicação da política;
+- preferências, tokens e cadastros mantidos apenas no navegador ou no computador do usuário deverão ser removidos pelo próprio produto quando houver uma função local de limpeza, sem pressupor que a exclusão da conta remova automaticamente dados de todos os dispositivos.
+
+### Processo interno de atendimento a titulares
+
+- o **Administrador da VEROLAB** será responsável por acompanhar o canal `verolabso@gmail.com`;
+- toda solicitação receberá protocolo no formato `VRL-AAAAMMDD-NNN`, com numeração sequencial diária;
+- o responsável deverá classificar solicitações de suporte, privacidade, acesso, correção, revogação de consentimento e exclusão;
+- antes de revelar, alterar ou excluir dados, deverá confirmar a identidade do solicitante usando somente as informações necessárias;
+- cada solicitação deverá ter registro mínimo de recebimento, categoria, verificações realizadas, resposta, prazo e resultado;
+- os registros de atendimento não deverão reproduzir senhas, tokens, dados completos de cartão ou outras credenciais;
+- quando houver dúvida jurídica, incidente relevante ou impossibilidade de atendimento, o responsável deverá encaminhar o caso para assessoria adequada.
+
+No lançamento, a VEROLAB não divulgará telefone ou WhatsApp como canal oficial. Todo pedido deverá ser enviado por e-mail para permitir confirmação, rastreabilidade e registro do atendimento.
+
+A conta de e-mail oficial possui autenticação em dois fatores ativada. Códigos de recuperação e métodos adicionais de acesso deverão ser mantidos em local seguro e não compartilhados em documentos do projeto.
+
+### Limites aprovados para analytics
+
+- operar somente nas páginas públicas institucionais e comerciais;
+- medir visitas, visualizações e localização aproximada, como país, estado ou cidade estimada;
+- não solicitar nem coletar GPS ou localização precisa;
+- não operar nas páginas autenticadas, interfaces OBS Deck ou Controle PTZ;
+- não receber e-mail, CPF/CNPJ, identificador Stripe, token, endereço de rede local, câmeras cadastradas ou comandos operacionais;
+- não utilizar pixels de publicidade ou criar perfis para publicidade comportamental;
+- respeitar a escolha do visitante e bloquear ferramentas não essenciais até o consentimento, quando aplicável;
+- oferecer opção acessível para rever ou retirar o consentimento;
+- documentar fornecedor, cookies, identificadores, retenção e eventual transferência internacional antes da ativação.
+
+### Configuração aprovada do Google Analytics 4
+
+- o GA4 somente poderá ser carregado após consentimento expresso do visitante;
+- recusar analytics não poderá impedir a navegação, criação de conta, teste ou compra;
+- o banner deverá oferecer opções claras de aceitar e recusar, sem seleção prévia;
+- a decisão deverá ser armazenada para evitar solicitações repetitivas e poderá ser alterada posteriormente;
+- tanto o aceite quanto a recusa permanecerão registrados no dispositivo por 6 meses;
+- uma nova escolha será solicitada ao fim desse prazo ou antes, quando houver mudança relevante nas finalidades, fornecedores ou categorias de dados;
+- a coleta ficará restrita ao site público, sem rastreamento entre as interfaces autenticadas e o produto;
+- recursos de Google Signals, publicidade personalizada, remarketing e compartilhamento para anúncios permanecerão desativados;
+- não será enviado `user_id`, e-mail, CPF/CNPJ ou qualquer outro dado que identifique diretamente o visitante;
+- a localização será apenas a estimativa agregada fornecida pelo GA4, sem acesso à localização precisa do dispositivo;
+- a retenção dos dados detalhados de usuários e eventos será configurada em 2 meses;
+- relatórios agregados poderão permanecer disponíveis conforme o funcionamento do GA4, sem permitir a identificação direta do visitante.
+
+### Transferências internacionais
+
+- Google/Firebase, Google Cloud, Google Analytics e Stripe poderão tratar ou armazenar dados em outros países conforme sua infraestrutura;
+- a política deverá identificar as categorias de fornecedores, as finalidades e a possibilidade de processamento internacional, sem afirmar uma localização exclusiva que não possa ser garantida;
+- somente os dados necessários a cada serviço poderão ser compartilhados;
+- a contratação e configuração dos fornecedores deverão utilizar mecanismos válidos para transferência internacional e proteção compatível com a LGPD;
+- a VEROLAB deverá revisar termos, aditivos de proteção de dados, controles de acesso e configurações de privacidade antes do lançamento e quando houver mudança relevante;
+- a transferência internacional não autoriza o envio de tokens locais do OBS/PTZ, credenciais, endereços de câmeras ou comandos operacionais para analytics ou cobrança.
 
 ## Propriedade intelectual e terceiros
 
@@ -174,9 +258,21 @@ As medidas aplicadas devem ser proporcionais: orientação ou aviso quando cabí
 
 ## Alterações dos documentos
 
+- as versões públicas usarão a data de vigência no formato `AAAA-MM-DD`;
 - mudanças relevantes nos Termos serão comunicadas com pelo menos 15 dias de antecedência;
 - alterações urgentes exigidas por lei ou necessárias à segurança poderão ter efeito imediato, com comunicação assim que possível;
 - quando a mudança exigir novo consentimento, o produto solicitará novo aceite versionado antes da continuidade aplicável.
+
+## Evidência de aceite
+
+- o checkout registrará as versões vigentes dos Termos de Uso, Política de Privacidade e Política de Cancelamento e Reembolso;
+- haverá um único checkbox obrigatório, não pré-marcado, com o texto: **“Li e aceito os Termos de Uso e a Política de Cancelamento e Reembolso e declaro estar ciente da Política de Privacidade.”**;
+- os nomes dos três documentos serão links individuais para suas versões vigentes;
+- o registro conterá data e hora, UID da conta, plano escolhido e origem do aceite;
+- o checkbox não será pré-marcado e o checkout ficará bloqueado até a confirmação;
+- a versão publicada e seu hash serão preservados de forma imutável para comprovar exatamente o conteúdo apresentado;
+- uma nova versão não alterará registros anteriores e exigirá novo aceite quando a natureza da mudança ou a legislação assim determinar.
+- o consentimento para GA4 permanecerá separado no banner de analytics e sua recusa não impedirá o checkout.
 
 ## Lei aplicável e foro
 

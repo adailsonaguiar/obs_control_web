@@ -28,7 +28,7 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 | Endereço comercial | QD ARSO 101 AL 12 QI 08 LT 07 A 7A, Plano Diretor Sul, CEP 77018-410 |
 | Município/UF | Palmas/TO |
 | E-mail de suporte | `verolabso@gmail.com` |
-| E-mail de privacidade/LGPD | PENDENTE |
+| E-mail de privacidade/LGPD | `verolabso@gmail.com` |
 | Telefone ou canal alternativo | PENDENTE |
 | Responsável pelo atendimento | PENDENTE |
 
@@ -67,14 +67,28 @@ Este arquivo é a fonte de verdade das decisões que alimentam documentos, check
 
 | Campo | Decisão |
 | --- | --- |
-| Controlador dos dados | PENDENTE — deve ser a entidade fornecedora |
+| Controlador dos dados | VEROLAB SOLUCOES EM TECNOLOGIA LTDA - ME, CNPJ 64.491.841/0001-21 |
 | Operadores conhecidos | Google/Firebase, Google Cloud e Stripe |
 | Analytics e marketing | PENDENTE |
-| Canal para direitos do titular | PENDENTE |
+| Canal para direitos do titular | `verolabso@gmail.com` |
 | Retenção da conta | PENDENTE |
 | Retenção de dados de assinatura/fiscais | PENDENTE |
 | Exclusão de conta | PENDENTE |
-| Público menor de idade | PENDENTE: definir restrição etária ou fluxo adequado |
+| Público menor de idade | Contratação somente por pessoa com 18 anos ou mais ou representante autorizado; uso por menor somente sob autorização e responsabilidade do responsável legal |
+
+### Inventário técnico inicial de dados
+
+| Ambiente | Dados identificados | Tratamento atual |
+| --- | --- | --- |
+| Firebase Authentication | E-mail, senha e identificador da conta | A senha é tratada pelo Firebase e não deve ser acessada nem registrada pela VEROLAB |
+| Backend/Firebase | UID e e-mail autenticado | Usados para identificar a conta e autorizar o acesso |
+| Firestore | Identificadores Stripe de cliente e assinatura, plano, estado, fim do período, cancelamento e datas técnicas | Usados para cobrança recorrente e liberação do produto |
+| Stripe | E-mail, UID como metadado, meio de pagamento e dados da assinatura | A VEROLAB não recebe os dados completos do cartão |
+| Navegador — OBS Deck | Host, porta, preferência de memorização e token local | Armazenados no dispositivo; o token fica na sessão ou, mediante escolha do usuário, no armazenamento local |
+| Navegador — Controle PTZ | Câmeras cadastradas, endereços de rede, modo de controle, ajustes do joystick, host, porta e token do servidor | Armazenados no dispositivo; o token permanece no armazenamento da sessão |
+| Navegador — preferências | Favoritos de áudio e demais preferências funcionais | Armazenados localmente no dispositivo |
+
+Os dados locais de conexão com OBS e câmeras PTZ não devem ser enviados à Stripe, ao Firebase Analytics ou a logs. A política pública deverá distinguir claramente armazenamento local no dispositivo de dados enviados à infraestrutura da VEROLAB e de seus operadores.
 
 ## Propriedade intelectual e terceiros
 

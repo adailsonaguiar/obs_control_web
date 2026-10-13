@@ -152,9 +152,9 @@ Decisão já aprovada:
 **Resultado:** inventário de dados e política aderente ao processamento real.
 
 - [ ] Mapear dados, finalidade, base legal e retenção.
-- [ ] Mapear Firebase, Stripe, Google Cloud e demais operadores.
+- [x] Mapear inicialmente Firebase, Stripe, Google Cloud e demais operadores conhecidos.
 - [ ] Documentar transferências internacionais.
-- [ ] Documentar direitos do titular e canal de atendimento.
+- [x] Definir canal de atendimento aos titulares: `verolabso@gmail.com`.
 - [ ] Definir exclusão de conta e retenções obrigatórias.
 - [ ] Documentar cookies, local storage e analytics.
 

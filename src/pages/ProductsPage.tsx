@@ -3,8 +3,8 @@ import {useAuth} from '../auth'
 import {getPTZEntitlement} from '../billing'
 
 const products = [
-  {name: 'OBS Deck', image: '/obs-deck-studio.png', href: '/deck', action: 'Abrir OBS Deck', description: 'Controle cenas, fontes, áudio, gravação e transmissão a partir de qualquer tela na sua rede local.', features: ['Cenas e fontes', 'Áudio e saídas', 'Diagnóstico em tempo real']},
-  {name: 'Controle PTZ', image: '/ptz-studio.png', href: '/ptz', action: 'Abrir Controle PTZ', description: 'Opere câmeras VISCA over IP com joystick, setas, zoom e presets salvos por câmera.', features: ['Joystick e setas', 'Zoom e presets', 'Múltiplas câmeras']},
+  {name: 'OBS Deck', image: '/Screenshot3.png', href: '/deck', action: 'Abrir OBS Deck', description: 'Controle cenas, fontes, áudio, gravação e transmissão a partir de qualquer tela na sua rede local.', features: ['Cenas e fontes', 'Áudio e saídas', 'Diagnóstico em tempo real']},
+  {name: 'Controle PTZ', image: '/Screenshot4.png', href: '/ptz', action: 'Abrir Controle PTZ', description: 'Opere câmeras VISCA over IP com joystick, setas, zoom e presets salvos por câmera.', features: ['Joystick e setas', 'Zoom e presets', 'Múltiplas câmeras']},
 ]
 
 export function ProductsPage() {

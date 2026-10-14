@@ -1,9 +1,5 @@
 # Termos de Uso do OBS Stream Tools
 
-> **RASCUNHO 0.1 — NÃO PUBLICAR SEM REVISÃO JURÍDICA**
->
-> Data de vigência: PENDENTE
-
 ## 1. Identificação do fornecedor
 
 O OBS Stream Tools é fornecido por **VEROLAB SOLUCOES EM TECNOLOGIA LTDA - ME**, nome fantasia **VEROLAB**, inscrita no CNPJ sob o nº **64.491.841/0001-21**, com sede na QD ARSO 101 AL 12 QI 08 LT 07 A 7A, Plano Diretor Sul, CEP 77018-410, Palmas/TO.
@@ -157,4 +153,3 @@ Para relações empresariais, fica indicado o foro de Palmas/TO. Para consumidor
 ## 20. Contato
 
 Dúvidas sobre estes Termos ou sobre o produto podem ser encaminhadas para **verolabso@gmail.com**.
-

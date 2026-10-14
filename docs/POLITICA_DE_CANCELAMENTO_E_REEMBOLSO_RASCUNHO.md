@@ -1,9 +1,6 @@
 # Política de Cancelamento e Reembolso — OBS Stream Tools
 
-> **RASCUNHO 0.1 — NÃO PUBLICAR SEM REVISÃO JURÍDICA**
-
-Última atualização proposta: PENDENTE  
-Vigência proposta: PENDENTE
+Última atualização proposta: PENDENTE
 
 ## 1. Identificação do fornecedor
 
